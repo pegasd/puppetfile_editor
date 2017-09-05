@@ -1,0 +1,3 @@
+class PuppetfileEditor::Module
+
+end
