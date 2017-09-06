@@ -10,6 +10,8 @@ RSpec.describe PuppetfileEditor do
   end
 
   it 'parses test Puppetfile' do
-    pedit = PuppetfileEditor
+    pedit = PuppetfileEditor::Puppetfile.new('spec/fixtures/Puppetfile')
+    pedit.load
+    expect(pedit.modules).to be_kind_of(Array)
   end
 end

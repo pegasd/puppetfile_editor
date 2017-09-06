@@ -1,0 +1,8 @@
+mod 'config', :local
+mod 'puppetlabs/stdlib', '4.19.0'
+mod 'accounts',
+  :hg  => 'https://hg.mycompany.net/puppet-accounts',
+  :tag => '0.8.0'
+mod 'nginx',
+  git: 'https://github.com/voxpupuli/puppet-nginx',
+  tag: :latest
