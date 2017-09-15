@@ -1,5 +1,3 @@
-require 'puppetfile_editor/module'
-
 module PuppetfileEditor
 
   class Puppetfile
@@ -15,8 +13,18 @@ module PuppetfileEditor
     def initialize(puppetfile_path = nil)
       @puppetfile_path = puppetfile_path || 'Puppetfile'
       @modules         = []
-
-      @loaded = false
+      @loaded          = false
+      @indents         = {
+        local: 0,
+        forge: 0,
+      }
+      @module_comments = {
+        local: 'Local modules',
+        forge: 'Modules from the Puppet Forge',
+        hg:    'Mercurial modules',
+        git:   'Git modules',
+        undef: 'Other modules',
+      }
     end
 
     def load
@@ -37,55 +45,37 @@ module PuppetfileEditor
       File.read @puppetfile_path
     end
 
-    def add_module(name, args)
-      full_module_name = name.tr('/', '-')
-      author, title    = (full_module_name.include? '-') ? parse_title(full_module_name) : [nil, full_module_name]
+    def generate_puppetfile
+      raise StandardError, 'File is not loaded' unless @loaded
 
-      module_hash          = {}
-      module_hash[:title]  = title
-      module_hash[:author] = author if author
+      contents  = []
+      mod_types = modules.group_by { |mod| mod.type }
 
-      if args == :local
-        module_hash[:type] = :local
-      elsif full_module_name.include? '-'
-        module_hash[:type]    = :forge
-        module_hash[:version] = (args.nil?) ? :latest : args
-      elsif args.is_a? Hash
-        if args.has_key? :hg
-          module_hash[:type]   = :hg
-          module_hash[:url]    = args[:hg]
-          module_hash[:branch] = args[:branch] if args[:branch]
-          module_hash[:tag]    = args[:tag] if args[:tag]
-          module_hash[:tag]    = args[:ref] if args[:ref]
-        elsif args.has_key? :git
-          module_hash[:type]   = :git
-          module_hash[:url]    = args[:git]
-          module_hash[:branch] = args[:branch] if args[:branch]
-          module_hash[:tag]    = args[:tag] if args[:tag]
-          module_hash[:ref]    = args[:ref] if args[:ref]
+      @module_comments.each do |module_type, module_comment|
+        if mod_types.has_key? module_type
+          contents.push "# #{module_comment}\n"
+          mod_types[module_type].each do |mod|
+            contents.push mod.dump
+          end
+          contents.push "\n"
         end
       end
 
-
-      @modules << module_hash
+      contents[0..-2].join
     end
 
-    def parse_title(title)
-      if (match = title.match(/\A(\w+)\Z/))
-        [nil, match[1]]
-      elsif (match = title.match(/\A(\w+)[-\/](\w+)\Z/))
-        [match[1], match[2]]
-      else
-        raise ArgumentError, _("Module name (%{title}) must match either 'modulename' or 'owner/modulename'") % { title: title }
-      end
+    # @param [String] name Module name
+    # @param [String, Hash] args Module arguments
+    def add_module(name, args)
+      @modules.push(PuppetfileEditor::Module.new(name, args))
     end
+
   end
 
+  # A barebones implementation of the Puppetfile DSL
+  #
+  # @api private
   class DSL
-    # A barebones implementation of the Puppetfile DSL
-    #
-    # @api private
-
     def initialize(librarian)
       @librarian = librarian
     end
@@ -95,7 +85,7 @@ module PuppetfileEditor
     end
 
     def method_missing(method, *args)
-      raise NoMethodError, _("unrecognized declaration '%{method}'") % { method: method }
+      raise NoMethodError, "unrecognized declaration '%{method}'" % { method: method }
     end
   end
 
