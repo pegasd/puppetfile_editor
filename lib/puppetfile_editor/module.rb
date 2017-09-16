@@ -46,7 +46,7 @@ module PuppetfileEditor
       end
     end
 
-    def dump(indent = 0)
+    def dump(old_hashes = false)
       output = []
       case @type
         when :hg, :git
@@ -57,22 +57,31 @@ module PuppetfileEditor
             else
               "'#{param_value}'"
             end
-            output.push "    %{param} %{value}" % { param: "#{param_name.to_s}:".ljust(@indent), value: value }
+            param = old_hashes ? ":#{param_name.to_s.ljust(@indent - 1)} =>" : "#{param_name.to_s}:".ljust(@indent)
+            output.push '    %{param} %{value}' % { param: param, value: value }
           end
         when :local
-          output.push("mod '#{full_title}', ".ljust(indent) + ':local')
+          output.push("mod '#{full_title}', :local")
         else
-          output.push("mod '#{full_title}', ".ljust(indent) + "'#{@params[:version]}'")
+          if @params.nil?
+            output.push("mod '#{full_title}'")
+          else
+            output.push("mod '#{full_title}', '#{@params[:version]}'")
+          end
       end
       output.join(",\n") << "\n"
+    end
+
+    def get_name_indent
+      full_title.length + 8
     end
 
     @private
 
     def parse_title(title)
-      if (match = title.match(/^(\w+)$/))
+      if (match = title.match(/^(\w[\w-]*\w)$/))
         [nil, match[1]]
-      elsif (match = title.match(%r{^(\w+)/(\w+)$}))
+      elsif (match = title.match(%r{^(\w+)[/-](\w[\w-]*\w)$}))
         [match[1], match[2]]
       else
         raise ArgumentError, _("Module name (%{title}) must match either 'modulename' or 'owner/modulename'") % { title: title }

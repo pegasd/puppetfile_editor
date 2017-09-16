@@ -48,6 +48,12 @@ RSpec.describe PuppetfileEditor::Module do
       expect(m.params[:tag]).to be_nil
       expect(m.params[:branch]).to eq('default')
     end
+
+    it 'can update forge module version' do
+      m = described_class.new('KyleAnderson/consul', '2.1.0')
+      m.set('version', '2.2.0')
+      expect(m.params[:version]).to eq('2.2.0')
+    end
   end
 
   describe '#dump' do

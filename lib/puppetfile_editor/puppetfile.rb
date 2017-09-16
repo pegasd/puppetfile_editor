@@ -1,5 +1,6 @@
 module PuppetfileEditor
 
+  # Puppetfile implementation
   class Puppetfile
     # @!attribute [r] modules
     #   @return [Array<PuppetfileEditor::Module>]
@@ -10,14 +11,12 @@ module PuppetfileEditor
     attr_reader :puppetfile_path
 
     # @param [String] puppetfile_path path to Puppetfile
-    def initialize(puppetfile_path = nil)
+    def initialize(puppetfile_path = nil, old_hashes = false)
       @puppetfile_path = puppetfile_path || 'Puppetfile'
       @modules         = []
       @loaded          = false
-      @indents         = {
-        local: 0,
-        forge: 0,
-      }
+      @forge           = nil
+      @old_hashes      = old_hashes
       @module_comments = {
         local: 'Local modules',
         forge: 'Modules from the Puppet Forge',
@@ -31,7 +30,7 @@ module PuppetfileEditor
       if File.readable? @puppetfile_path
         load!
       else
-        logger.debug _("Puppetfile %{path} missing or unreadable") % { path: @puppetfile_path.inspect }
+        raise StandardError, "Puppetfile %{path} missing or unreadable" % { path: @puppetfile_path.inspect }
       end
     end
 
@@ -51,11 +50,12 @@ module PuppetfileEditor
       contents  = []
       mod_types = modules.group_by { |mod| mod.type }
 
+      contents.push "forge '#{@forge}'\n\n" if @forge
       @module_comments.each do |module_type, module_comment|
         if mod_types.has_key? module_type
           contents.push "# #{module_comment}\n"
           mod_types[module_type].each do |mod|
-            contents.push mod.dump
+            contents.push mod.dump(@old_hashes)
           end
           contents.push "\n"
         end
@@ -70,6 +70,10 @@ module PuppetfileEditor
       @modules.push(PuppetfileEditor::Module.new(name, args))
     end
 
+    def update_forge_url(url)
+      raise StandardError, "Forge URL must be a String, but it is a #{url.class}" unless url.is_a? String
+      @forge = url
+    end
   end
 
   # A barebones implementation of the Puppetfile DSL
@@ -82,6 +86,10 @@ module PuppetfileEditor
 
     def mod(name, args = nil)
       @librarian.add_module(name, args)
+    end
+
+    def forge(url)
+      @librarian.update_forge_url(url)
     end
 
     def method_missing(method, *args)
