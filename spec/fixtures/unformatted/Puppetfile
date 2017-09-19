@@ -1,22 +1,23 @@
 mod 'puppetlabs/concat', '4.0.1'
+mod 'vpn',	 :local
 mod 'puppetlabs/stdlib', '4.17.1'
 mod 'puppetlabs/lvm', '0.7.0'
+mod 'check_geoip',	 :local
 mod 'puppetlabs/inifile', '1.4.3'
 mod 'puppetlabs/apache', '1.10.0'
 mod 'puppetlabs/postgresql', '5.0.0'
 mod 'celery',	 :local
-mod 'check_geoip',	 :local
 mod 'config',	 :local
 mod 'puppetlabs/rabbitmq', '5.6.0'
 mod 'locp/cassandra', '1.13.0'
 mod 'wywygmbh/fluentd', '0.5.0'
 mod 'camptocamp/kmod', '2.1.0'
 mod 'petems/swap_file', '3.0.2'
+mod 'nginx', git: 'https://github.com/voxpupuli/puppet-nginx',
+  tag: :latest
 mod 'KyleAnderson/consul',        '2.1.0'
-mod 'kibastic',     :local
 mod 'lsyncd',	 :local
+mod 'kibastic',     :local
 mod 'mongo',	 :local
-mod 'nginx',	 :local
 mod 's3cmd',	 :local
 mod 'vcsrepo',   :local
-mod 'vpn',	 :local
