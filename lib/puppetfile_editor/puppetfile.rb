@@ -1,12 +1,13 @@
-module PuppetfileEditor
+require 'puppetfile_editor/module'
 
+module PuppetfileEditor
   # Puppetfile implementation
   class Puppetfile
     # @!attribute [r] modules
     #   @return [Array<PuppetfileEditor::Module>]
     attr_reader :modules
 
-    # @!attrbute [r] puppetfile_path
+    # @!attribute [r] puppetfile_path
     #   @return [String] The path to the Puppetfile
     attr_reader :puppetfile_path
 
@@ -27,14 +28,8 @@ module PuppetfileEditor
     end
 
     def load
-      if File.readable? @puppetfile_path
-        load!
-      else
-        raise StandardError, "Puppetfile %{path} missing or unreadable" % { path: @puppetfile_path.inspect }
-      end
-    end
+      raise StandardError, "Puppetfile #{@puppetfile_path.inspect} missing or unreadable" unless File.readable? @puppetfile_path
 
-    def load!
       dsl = PuppetfileEditor::DSL.new(self)
       dsl.instance_eval(puppetfile_contents, @puppetfile_path)
       @loaded = true
@@ -48,13 +43,13 @@ module PuppetfileEditor
       raise StandardError, 'File is not loaded' unless @loaded
 
       contents  = []
-      mod_types = modules.group_by { |mod| mod.type }
+      mod_types = modules.group_by(&:type)
 
       contents.push "forge '#{@forge}'\n\n" if @forge
       @module_comments.each do |module_type, module_comment|
         if mod_types.has_key? module_type
           contents.push "# #{module_comment}\n"
-          mod_types[module_type].each do |mod|
+          mod_types[module_type].sort_by(&:full_title).each do |mod|
             contents.push mod.dump(@old_hashes)
           end
           contents.push "\n"
@@ -62,6 +57,10 @@ module PuppetfileEditor
       end
 
       contents[0..-2].join
+    end
+
+    def dump
+      File.write(@puppetfile_path, generate_puppetfile) if @loaded
     end
 
     # @param [String] name Module name
@@ -96,5 +95,4 @@ module PuppetfileEditor
       raise NoMethodError, "unrecognized declaration '%{method}'" % { method: method }
     end
   end
-
 end
