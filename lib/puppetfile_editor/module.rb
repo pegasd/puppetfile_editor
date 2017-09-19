@@ -72,8 +72,9 @@ module PuppetfileEditor
       output.join(",\n") << "\n"
     end
 
-    def get_name_indent
-      full_title.length + 8
+    def full_title
+      return "#{@author}/#{@name}" if @author
+      @name
     end
 
     private
@@ -86,11 +87,6 @@ module PuppetfileEditor
       else
         raise ArgumentError, _("Module name (%{title}) must match either 'modulename' or 'owner/modulename'") % { title: title }
       end
-    end
-
-    def full_title
-      return "#{@author}/#{@name}" if @author
-      @name
     end
 
     def calculate_indent
