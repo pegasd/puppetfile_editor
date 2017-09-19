@@ -76,7 +76,7 @@ module PuppetfileEditor
       full_title.length + 8
     end
 
-    @private
+    private
 
     def parse_title(title)
       if (match = title.match(/^(\w[\w-]*\w)$/))

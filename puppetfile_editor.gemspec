@@ -1,5 +1,3 @@
-# coding: utf-8
-
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'puppetfile_editor/version'
@@ -18,7 +16,7 @@ Gem::Specification.new do |spec|
     update module versions, add, and remove modules.
   DESCRIPTION
   spec.license       = 'MIT'
-  spec.files         = Dir['README.md', 'lib/**/*.rb', 'bin/puppetfile']
+  spec.files         = Dir['README.md', 'lib/**/*.rb', 'bin/pfile']
   spec.bindir        = 'bin'
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']

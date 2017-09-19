@@ -1,0 +1,26 @@
+---
+AllCops:
+  TargetRubyVersion: 2.3
+  DisplayCopNames: true
+
+# Style
+Style/FrozenStringLiteralComment:
+  Enabled: false
+Style/SymbolArray:
+  Description: Using percent style obscures symbolic intent of array's contents.
+  EnforcedStyle: brackets
+Style/IndentationConsistency:
+  AllowProtectedAndPrivateMethodsBeIndented: true
+
+# Layout
+Layout/ClosingParenthesisIndentation:
+  Enabled: false
+
+# Metrics
+Metrics/MethodLength:
+  Max: 50
+Metrics/BlockLength:
+  Max: 300
+Metrics/LineLength:
+  Description: People have wide screens, use them.
+  Max: 140
