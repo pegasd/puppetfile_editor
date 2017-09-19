@@ -3,14 +3,50 @@
 require 'puppetfile_editor'
 require 'optparse'
 
+filename = File.basename(__FILE__)
+
 options = {}
-OptionParser.new do |opts|
-  opts.banner = "Usage: #{File.basename __FILE__} [command] [options]"
-
-  opts.on('-v', '--[no-]verbose', 'Run verbosely') do |v|
-    options[:verbose] = v
+OptionParser.new do |parser|
+  parser.banner = "Usage: #{filename} [command] [options]"
+  parser.on('-v', '--[no-]verbose', 'Run verbosely') { |v| options[:verbose] = v }
+  parser.on(
+    '-f',
+    '--filename [PUPPETFILE]',
+    'Path to your Puppetfile.',
+    'The default is to look for Puppetfile in current directory.',
+  ) do |puppetfile|
+    options[:puppetfile] = puppetfile || 'Puppetfile'
   end
-end.parse!
+end.order!
 
-p options
-p ARGV
+subcommands = {
+  'edit'   => OptionParser.new do |parser|
+    parser.banner = "Usage: #{filename} edit [options]"
+    parser.on('-n', '--module-name NAME', 'Module name') do |setting|
+      options[:name] = setting
+    end
+    parser.on('-u', '--update ENUM', [:ref, :branch, :tag], 'What to update') do |setting|
+      options[:param] = setting
+    end
+    begin
+      pf = PuppetfileEditor::Puppetfile.new(options[:puppetfile])
+      pf.load
+    rescue StandardError => e
+      warn e.message
+      exit
+    end
+  end,
+  'format' => OptionParser.new do |_|
+    begin
+      pf = PuppetfileEditor::Puppetfile.new(options[:puppetfile])
+      pf.load
+      pf.dump
+    rescue StandardError => e
+      warn e.message
+      exit
+    end
+  end,
+}
+
+command = ARGV.shift
+subcommands[command].order!
