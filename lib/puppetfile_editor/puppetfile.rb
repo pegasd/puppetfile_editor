@@ -4,7 +4,7 @@ module PuppetfileEditor
   # Puppetfile implementation
   class Puppetfile
     # @!attribute [r] modules
-    #   @return [Array<PuppetfileEditor::Module>]
+    #   @return [Hash<String, PuppetfileEditor::Module>]
     attr_reader :modules
 
     # @!attribute [r] puppetfile_path
@@ -14,11 +14,11 @@ module PuppetfileEditor
     # @param [String] puppetfile_path path to Puppetfile
     def initialize(puppetfile_path = nil, old_hashes = false)
       @puppetfile_path = puppetfile_path || 'Puppetfile'
-      @modules         = []
+      @modules         = {}
       @loaded          = false
       @forge           = nil
       @old_hashes      = old_hashes
-      @module_comments = {
+      @module_sections = {
         local: 'Local modules',
         forge: 'Modules from the Puppet Forge',
         hg:    'Mercurial modules',
@@ -42,18 +42,18 @@ module PuppetfileEditor
     def generate_puppetfile
       raise StandardError, 'File is not loaded' unless @loaded
 
-      contents  = []
-      mod_types = modules.group_by(&:type)
+      contents = []
 
       contents.push "forge '#{@forge}'\n\n" if @forge
-      @module_comments.each do |module_type, module_comment|
-        if mod_types.has_key? module_type
-          contents.push "# #{module_comment}\n"
-          mod_types[module_type].sort_by(&:full_title).each do |mod|
-            contents.push mod.dump(@old_hashes)
-          end
-          contents.push "\n"
+
+      @module_sections.each do |module_type, module_comment|
+        module_list = modules.select { |_, mod| mod.type == module_type }
+        next unless module_list.any?
+        contents.push "# #{module_comment}\n"
+        module_list.values.sort_by(&:name).each do |mod|
+          contents.push mod.dump(@old_hashes)
         end
+        contents.push "\n"
       end
 
       contents[0..-2].join
@@ -66,7 +66,8 @@ module PuppetfileEditor
     # @param [String] name Module name
     # @param [String, Hash] args Module arguments
     def add_module(name, args)
-      @modules.push(PuppetfileEditor::Module.new(name, args))
+      mod                = PuppetfileEditor::Module.new(name, args)
+      @modules[mod.name] = mod
     end
 
     def update_forge_url(url)
@@ -91,8 +92,8 @@ module PuppetfileEditor
       @librarian.update_forge_url(url)
     end
 
-    def method_missing(method, *args)
-      raise NoMethodError, "unrecognized declaration '%{method}'" % { method: method }
+    def method_missing(method, *_)
+      raise NoMethodError, "Unrecognized declaration: '#{method}'"
     end
   end
 end

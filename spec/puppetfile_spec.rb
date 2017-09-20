@@ -13,7 +13,7 @@ RSpec.describe PuppetfileEditor::Puppetfile do
     it 'loads basic Puppetfile' do
       pedit = described_class.new(File.join(fixtures_dir, 'Puppetfile'))
       pedit.load
-      expect(pedit.modules).to be_kind_of(Array)
+      expect(pedit.modules).to be_kind_of(Hash)
     end
 
     it 'fails when file does not exist' do
@@ -62,18 +62,18 @@ RSpec.describe PuppetfileEditor::Puppetfile do
         mod 'vpn', :local
 
         # Modules from the Puppet Forge
-        mod 'KyleAnderson/consul', '2.1.0'
-        mod 'camptocamp/kmod', '2.1.0'
-        mod 'locp/cassandra', '1.13.0'
-        mod 'petems/swap_file', '3.0.2'
         mod 'puppetlabs/apache', '1.10.0'
+        mod 'locp/cassandra', '1.13.0'
         mod 'puppetlabs/concat', '4.0.1'
+        mod 'KyleAnderson/consul', '2.1.0'
+        mod 'wywygmbh/fluentd', '0.5.0'
         mod 'puppetlabs/inifile', '1.4.3'
+        mod 'camptocamp/kmod', '2.1.0'
         mod 'puppetlabs/lvm', '0.7.0'
         mod 'puppetlabs/postgresql', '5.0.0'
         mod 'puppetlabs/rabbitmq', '5.6.0'
         mod 'puppetlabs/stdlib', '4.17.1'
-        mod 'wywygmbh/fluentd', '0.5.0'
+        mod 'petems/swap_file', '3.0.2'
 
         # Git modules
         mod 'nginx',
@@ -87,6 +87,6 @@ RSpec.describe PuppetfileEditor::Puppetfile do
   it 'properly fails when parsing broken Puppetfile' do
     pedit = described_class.new(File.join(fixtures_dir, 'broken', 'Puppetfile'))
     expect { pedit.load }
-      .to raise_error(NoMethodError, /unrecognized declaration 'omg'/)
+      .to raise_error(NoMethodError, /Unrecognized declaration: 'omg'/)
   end
 end

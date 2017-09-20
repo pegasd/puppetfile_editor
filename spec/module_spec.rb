@@ -19,31 +19,31 @@ RSpec.describe PuppetfileEditor::Module do
     end
 
     it 'can initialize git modules' do
-      expect(described_class.new('apt', { git: 'https://github.com/puppetlabs/puppetlabs-apt', tag: '4.1.0' }).type).to eq(:git)
-      expect(described_class.new('apt', { git: 'https://github.com/puppetlabs/puppetlabs-apt', tag: '4.1.0' }).params).to eq(
+      expect(described_class.new('apt', git: 'https://github.com/puppetlabs/puppetlabs-apt', tag: '4.1.0').type).to eq(:git)
+      expect(described_class.new('apt', git: 'https://github.com/puppetlabs/puppetlabs-apt', tag: '4.1.0').params).to eq(
         git: 'https://github.com/puppetlabs/puppetlabs-apt',
         tag: '4.1.0',
       )
     end
 
     it 'can initialize hg module' do
-      expect(described_class.new('accounts', { hg: 'https://hg.mycompany.net/puppet/accounts', tag: '0.10.0' }).type).to eq(:hg)
+      expect(described_class.new('accounts', hg: 'https://hg.mycompany.net/puppet/accounts', tag: '0.10.0').type).to eq(:hg)
     end
 
     it 'can initialize unsupported module' do
-      expect(described_class.new('weird_module', %w(hello there)).type).to eq(:undef)
+      expect(described_class.new('weird_module', %w[hello there]).type).to eq(:undef)
     end
   end
 
   describe '#set' do
     it 'can update tag of git module' do
-      m = described_class.new('apt', { git: 'https://github.com/puppetlabs/puppetlabs-apt', tag: '4.1.0' })
+      m = described_class.new('apt', git: 'https://github.com/puppetlabs/puppetlabs-apt', tag: '4.1.0')
       m.set('tag', '4.2.0')
       expect(m.params[:tag]).to eq('4.2.0')
     end
 
     it 'can rewrite tag with branch for hg module' do
-      m = described_class.new('accounts', { hg: 'https://hg.mycompany.net/puppet/accounts', tag: '0.10.0' })
+      m = described_class.new('accounts', hg: 'https://hg.mycompany.net/puppet/accounts', tag: '0.10.0')
       m.set('branch', 'default')
       expect(m.params[:tag]).to be_nil
       expect(m.params[:branch]).to eq('default')
@@ -58,7 +58,7 @@ RSpec.describe PuppetfileEditor::Module do
 
   describe '#dump' do
     it 'can dump git module' do
-      m = described_class.new('apt', { git: 'https://github.com/puppetlabs/puppetlabs-apt', branch: 'master' })
+      m = described_class.new('apt', git: 'https://github.com/puppetlabs/puppetlabs-apt', branch: 'master')
       expect(m.dump).to eq(<<~DUMP
         mod 'apt',
             git:    'https://github.com/puppetlabs/puppetlabs-apt',
