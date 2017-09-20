@@ -24,7 +24,7 @@ module PuppetfileEditor
     end
 
     def add(opts)
-      warn_and_exit "Module #{opts[:name]} is already present in your Puppetfile." if @pfire.modules.key? opts[:name]
+      warn_and_exit "Module #{opts[:name]} is already present in your Puppetfile." if @pfile.modules.key? opts[:name]
 
       case opts[:type]
         when :hg, :git
