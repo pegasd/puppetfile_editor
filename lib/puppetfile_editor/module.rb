@@ -70,7 +70,7 @@ module PuppetfileEditor
             output.push("mod '#{full_title}', '#{@params[:version]}'")
           end
       end
-      output.join(",\n") << "\n"
+      output.join(",\n")
     end
 
     def full_title

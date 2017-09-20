@@ -1,13 +1,16 @@
 #!/usr/bin/env ruby
 
-require 'puppetfile_editor'
+require 'puppetfile_editor/cli'
 require 'optparse'
 
 filename = File.basename(__FILE__)
 
+# Display help if no arguments are specified
+ARGV.push('-h') if ARGV.empty?
+
 options = {}
 OptionParser.new do |parser|
-  parser.banner = "Usage: #{filename} [command] [options]"
+  parser.banner = "Usage: #{filename} [options] [command] [command options]"
   parser.on('-v', '--[no-]verbose', 'Run verbosely') { |v| options[:verbose] = v }
   parser.on(
     '-f',
@@ -22,31 +25,47 @@ end.order!
 subcommands = {
   'edit'   => OptionParser.new do |parser|
     parser.banner = "Usage: #{filename} edit [options]"
-    parser.on('-n', '--module-name NAME', 'Module name') do |setting|
+    parser.on('-m', '--module-name NAME', 'Module name') do |setting|
       options[:name] = setting
     end
-    parser.on('-u', '--update ENUM', [:ref, :branch, :tag], 'What to update') do |setting|
-      options[:param] = setting
-    end
-    begin
-      pf = PuppetfileEditor::Puppetfile.new(options[:puppetfile])
-      pf.load
-    rescue StandardError => e
-      warn e.message
-      exit
+    parser.on('-u', '--update PARAM=VALUE', 'What to update') do |setting|
+      if (match = setting.match(/^(\w+)=([^=]+)$/))
+        options[:param], options[:value] = match[1], match[2]
+      else
+        warn 'Version must match PARAM=VALUE pattern'
+        exit 1
+      end
     end
   end,
-  'format' => OptionParser.new do |_|
-    begin
-      pf = PuppetfileEditor::Puppetfile.new(options[:puppetfile])
-      pf.load
-      pf.dump
-    rescue StandardError => e
-      warn e.message
-      exit
+  'format' => OptionParser.new do |parser|
+    parser.banner = "Usage: #{filename} format"
+  end,
+  'add' => OptionParser.new do |parser|
+    parser.banner = "Usage: #{filename} add [options]"
+    parser.on('-m', '--module-name NAME', 'Module name') do |setting|
+      options[:name] = setting
+    end
+    parser.on('-t', '--type TYPE', [:hg, :forge, :local, :git], 'Type of module to add') do |setting|
+      options[:type] = setting
+    end
+    parser.on('-l', '--url [URL]', 'URL of module (applicable for hg and git modules)') do |setting|
+      options[:url] = setting
+    end
+    parser.on('-u', '--version [PARAM=VALUE]', 'Version of module to add in the form of PARAM=VALUE') do |setting|
+      if (match = setting.match(/^(\w+)=([^=]+)$/))
+        options[:param], options[:value] = match[1], match[2]
+      elsif (match = setting.match(/^\d+(\.\d)*$/))
+        options[:version] = match[0]
+      else
+        warn 'Version must match PARAM=VALUE pattern or be a proper Forge version.'
+        exit 1
+      end
     end
   end,
 }
 
 command = ARGV.shift
 subcommands[command].order!
+
+pf = PuppetfileEditor::CLI.new(options[:puppetfile])
+pf.public_send(command, options) if pf.respond_to?(command)

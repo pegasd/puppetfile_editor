@@ -44,23 +44,37 @@ module PuppetfileEditor
 
       contents = []
 
-      contents.push "forge '#{@forge}'\n\n" if @forge
+      contents.push "forge '#{@forge}'\n" if @forge
 
       @module_sections.each do |module_type, module_comment|
         module_list = modules.select { |_, mod| mod.type == module_type }
         next unless module_list.any?
-        contents.push "# #{module_comment}\n"
+        contents.push "# #{module_comment}"
         module_list.values.sort_by(&:name).each do |mod|
           contents.push mod.dump(@old_hashes)
         end
-        contents.push "\n"
+        contents.push ''
       end
 
-      contents[0..-2].join
+      contents.join("\n")
     end
 
     def dump
       File.write(@puppetfile_path, generate_puppetfile) if @loaded
+    end
+
+    def update_module(name, param, value, verbose = false)
+      if @modules.key? name
+        begin
+          @modules[name].set(param, value)
+          puts "Successfully set #{param} to #{value} for #{name}." if verbose
+        rescue StandardError => e
+          warn e.message
+          exit 1
+        end
+      else
+        warn "Module #{name} does not exist in your Puppetfile"
+      end
     end
 
     # @param [String] name Module name
