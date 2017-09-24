@@ -8,17 +8,12 @@ filename = File.basename(__FILE__)
 # Display help if no arguments are specified
 ARGV.push('-h') if ARGV.empty?
 
-options = {}
+options = { puppetfile: 'Puppetfile' }
 OptionParser.new do |parser|
   parser.banner = "Usage: #{filename} [options] [command] [command options]"
   parser.on('-v', '--[no-]verbose', 'Run verbosely') { |v| options[:verbose] = v }
-  parser.on(
-    '-f',
-    '--filename [PUPPETFILE]',
-    'Path to your Puppetfile.',
-    'The default is to look for Puppetfile in current directory.',
-  ) do |puppetfile|
-    options[:puppetfile] = puppetfile || 'Puppetfile'
+  parser.on('-f', '--filename PUPPETFILE', 'Path to your Puppetfile.') do |puppetfile|
+    options[:puppetfile] = puppetfile
   end
 end.order!
 
@@ -40,7 +35,7 @@ subcommands = {
   'format' => OptionParser.new do |parser|
     parser.banner = "Usage: #{filename} format"
   end,
-  'add' => OptionParser.new do |parser|
+  'add'    => OptionParser.new do |parser|
     parser.banner = "Usage: #{filename} add [options]"
     parser.on('-m', '--module-name NAME', 'Module name') do |setting|
       options[:name] = setting
@@ -60,6 +55,16 @@ subcommands = {
         warn 'Version must match PARAM=VALUE pattern or be a proper Forge version.'
         exit 1
       end
+    end
+  end,
+  'merge'  => OptionParser.new do |parser|
+    parser.banner = "Usage: #{filename} merge [options]"
+    parser.separator '  Merge existing Puppetfile with another one from STDIN.'
+    parser.separator '  Dump the result to STDOUT.'
+    parser.separator ''
+
+    parser.on('-f', '--force', 'Force merge module versions') do |setting|
+      options[:force] = setting
     end
   end,
 }

@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'puppetfile_editor/module'
 
 RSpec.describe PuppetfileEditor::Module do
   describe '#initialize' do

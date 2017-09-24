@@ -11,13 +11,17 @@ module PuppetfileEditor
     #   @return [String] The path to the Puppetfile
     attr_reader :puppetfile_path
 
-    # @param [String] puppetfile_path path to Puppetfile
-    def initialize(puppetfile_path = nil, old_hashes = false)
-      @puppetfile_path = puppetfile_path || 'Puppetfile'
+    attr_reader :module_sections
+
+    # @param [String] path path to Puppetfile
+    def initialize(path: 'Puppetfile', from_stdin: false, old_hashes: false)
+      @puppetfile_path = path
+      @from_stdin      = from_stdin
+      @old_hashes      = old_hashes
       @modules         = {}
       @loaded          = false
       @forge           = nil
-      @old_hashes      = old_hashes
+
       @module_sections = {
         local: 'Local modules',
         forge: 'Modules from the Puppet Forge',
@@ -28,15 +32,17 @@ module PuppetfileEditor
     end
 
     def load
-      raise StandardError, "Puppetfile #{@puppetfile_path.inspect} missing or unreadable" unless File.readable? @puppetfile_path
+      puppetfile_contents = if @from_stdin
+                              $stdin.gets(nil).chomp
+                            else
+                              raise(IOError, "Puppetfile #{@puppetfile_path} missing or unreadable") unless File.readable?(@puppetfile_path)
+
+                              File.read @puppetfile_path
+                            end
 
       dsl = PuppetfileEditor::DSL.new(self)
-      dsl.instance_eval(puppetfile_contents, @puppetfile_path)
+      dsl.instance_eval(puppetfile_contents)
       @loaded = true
-    end
-
-    def puppetfile_contents
-      File.read @puppetfile_path
     end
 
     def generate_puppetfile

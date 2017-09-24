@@ -3,10 +3,14 @@ module PuppetfileEditor
     attr_reader :type
     attr_reader :params
     attr_reader :name
+    attr_reader :message
+    attr_reader :status
 
     def initialize(title, args = nil)
-      @type   = :undef
-      @params = nil
+      @type    = :undef
+      @params  = nil
+      @message = nil
+      @status  = nil
       if args == :local
         @type = :local
       elsif args.nil? || args.is_a?(String) || args.is_a?(Symbol)
@@ -24,7 +28,7 @@ module PuppetfileEditor
       @author, @name = parse_title title
     end
 
-    def set(param, newvalue)
+    def set(param, newvalue, force = false)
       case @type
         when :hg, :git
           if %w[branch tag ref].include? param
@@ -44,6 +48,48 @@ module PuppetfileEditor
           end
         else
           raise StandardError, "Editing params for '#{@type}' modules is not supported."
+      end
+    end
+
+    def merge_with(mod, force = false)
+      unless mod.type == @type
+        @status = :type_mismatched
+        raise(StandardError, "type mismatch ('#{@type}' vs '#{mod.type}')")
+      end
+      case @type
+        when :hg, :git
+          new = mod.params.reject { |param, _| param.eql? @type }
+          if !force && new.keys == [:tag] && (@params.key?(:branch) || @params.key?(:ref))
+            raise(StandardError, "kept at #{full_version}")
+          end
+          if full_version == mod.full_version
+            @message = "versions match (#{full_version})"
+            @status  = :matched
+          else
+            @message = "updated (#{full_version} to #{mod.full_version})"
+            @status  = :updated
+          end
+          @params.delete_if { |param, _| [:branch, :tag, :ref].include? param }
+          @params.merge!(new)
+          calculate_indent
+        when :forge
+          unless force
+            if mod.params.nil? or mod.params.is_a? Symbol
+              @status = :wont_upgrade
+              raise(StandardError, "won't upgrade to #{mod.full_version}")
+            end
+          end
+          if full_version == mod.full_version
+            @message = "versions match (#{full_version})"
+            @status  = :matched
+          else
+            @message = "updated (#{full_version} to #{mod.full_version})"
+            @status  = :updated
+          end
+          @params = mod.params
+        else
+          @status = :skipped
+          raise(StandardError, 'only git, forge, and hg modules are supported for merging')
       end
     end
 
@@ -76,6 +122,18 @@ module PuppetfileEditor
     def full_title
       return "#{@author}/#{@name}" if @author
       @name
+    end
+
+    def full_version
+      case @type
+        when :hg, :git
+          @params.reject { |param, _| param.eql? @type }.map { |param, value| "#{param}: #{value}" }.sort.join(', ')
+        when :forge
+          return @params[:version] if @params.key? :version
+          nil
+        else
+          nil
+      end
     end
 
     private

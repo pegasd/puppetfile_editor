@@ -7,24 +7,31 @@ RSpec.describe PuppetfileEditor::Puppetfile do
     it 'passes initialization' do
       expect(described_class.new).to be_a_kind_of(PuppetfileEditor::Puppetfile)
     end
+
   end
 
   describe '#load' do
     it 'loads basic Puppetfile' do
-      pedit = described_class.new(File.join(fixtures_dir, 'Puppetfile'))
+      pedit = described_class.new(path: File.join(fixtures_dir, 'Puppetfile'))
       pedit.load
       expect(pedit.modules).to be_kind_of(Hash)
     end
 
     it 'fails when file does not exist' do
-      pedit = described_class.new(File.join(fixtures_dir, 'nonexistant', 'Puppetfile'))
+      pedit = described_class.new(path: File.join(fixtures_dir, 'nonexistant', 'Puppetfile'))
       expect { pedit.load }.to raise_error(StandardError, /missing or unreadable/)
+    end
+
+    it 'fails when Puppetfile is broken' do
+      pedit = described_class.new(path: File.join(fixtures_dir, 'broken', 'Puppetfile'))
+      expect { pedit.load }
+        .to raise_error(NoMethodError, /Unrecognized declaration: 'omg'/)
     end
   end
 
   describe '#generate_puppetfile' do
     it 'outputs Puppetfile' do
-      pedit = described_class.new(File.join(fixtures_dir, 'Puppetfile'))
+      pedit = described_class.new(path: File.join(fixtures_dir, 'Puppetfile'))
       pedit.load
       expect(pedit.generate_puppetfile).to eq(<<~RUBY
         # Local modules
@@ -47,7 +54,7 @@ RSpec.describe PuppetfileEditor::Puppetfile do
     end
 
     it 'reformats Puppetfile properly' do
-      pedit = described_class.new(File.join(fixtures_dir, 'unformatted', 'Puppetfile'))
+      pedit = described_class.new(path: File.join(fixtures_dir, 'unformatted', 'Puppetfile'))
       pedit.load
       expect(pedit.generate_puppetfile).to eq(<<~RUBY
         # Local modules
@@ -84,9 +91,22 @@ RSpec.describe PuppetfileEditor::Puppetfile do
     end
   end
 
-  it 'properly fails when parsing broken Puppetfile' do
-    pedit = described_class.new(File.join(fixtures_dir, 'broken', 'Puppetfile'))
-    expect { pedit.load }
-      .to raise_error(NoMethodError, /Unrecognized declaration: 'omg'/)
+  describe '#update_module' do
+    pedit = described_class.new(path: File.join(fixtures_dir, 'Puppetfile'))
+    pedit.load
+    it 'updates git module tag' do
+      pedit.update_module('nginx', 'tag', '1.2')
+      expect(pedit.modules['nginx'].params[:tag]).to eq('1.2')
+    end
+
+    it 'updates hg module tag' do
+      pedit.update_module('accounts', 'tag', '0.9.0')
+      expect(pedit.modules['accounts'].params[:tag]).to eq('0.9.0')
+    end
+
+    it 'updates forge module version' do
+      pedit.update_module('stdlib', 'version', '4.20.0')
+      expect(pedit.modules['stdlib'].params[:version]).to eq('4.20.0')
+    end
   end
 end
