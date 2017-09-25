@@ -66,6 +66,7 @@ module PuppetfileEditor
           if full_version == mod.full_version
             @message = "versions match (#{full_version})"
             @status  = :matched
+            return
           else
             @message = "updated (#{full_version} to #{mod.full_version})"
             @status  = :updated
@@ -83,6 +84,7 @@ module PuppetfileEditor
           if full_version == mod.full_version
             @message = "versions match (#{full_version})"
             @status  = :matched
+            return
           else
             @message = "updated (#{full_version} to #{mod.full_version})"
             @status  = :updated

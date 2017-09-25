@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Proper status for `kept at ...` messages.
+- Return earlier on `:matched` status so that no re-ordering of parameters can occur.
 
 ## [0.2.0] - 2017-09-25
 ### Added
