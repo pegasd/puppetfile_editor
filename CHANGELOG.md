@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Removed named parameters from `Puppetfile#initialize` to support older Rubies.
 
+### Fixed
+- Proper status for `kept at ...` messages.
+
 ## [0.2.0] - 2017-09-25
 ### Added
 - Merge function.

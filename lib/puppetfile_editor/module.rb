@@ -60,6 +60,7 @@ module PuppetfileEditor
         when :hg, :git
           new = mod.params.reject { |param, _| param.eql? @type }
           if !force && new.keys == [:tag] && (@params.key?(:branch) || @params.key?(:ref))
+            @status = :wont_upgrade
             raise(StandardError, "kept at #{full_version}")
           end
           if full_version == mod.full_version
