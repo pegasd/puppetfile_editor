@@ -12,18 +12,18 @@ RSpec.describe PuppetfileEditor::Puppetfile do
 
   describe '#load' do
     it 'loads basic Puppetfile' do
-      pedit = described_class.new(path: File.join(fixtures_dir, 'Puppetfile'))
+      pedit = described_class.new(File.join(fixtures_dir, 'Puppetfile'))
       pedit.load
       expect(pedit.modules).to be_kind_of(Hash)
     end
 
     it 'fails when file does not exist' do
-      pedit = described_class.new(path: File.join(fixtures_dir, 'nonexistant', 'Puppetfile'))
+      pedit = described_class.new(File.join(fixtures_dir, 'nonexistant', 'Puppetfile'))
       expect { pedit.load }.to raise_error(StandardError, /missing or unreadable/)
     end
 
     it 'fails when Puppetfile is broken' do
-      pedit = described_class.new(path: File.join(fixtures_dir, 'broken', 'Puppetfile'))
+      pedit = described_class.new(File.join(fixtures_dir, 'broken', 'Puppetfile'))
       expect { pedit.load }
         .to raise_error(NoMethodError, /Unrecognized declaration: 'omg'/)
     end
@@ -31,7 +31,7 @@ RSpec.describe PuppetfileEditor::Puppetfile do
 
   describe '#generate_puppetfile' do
     it 'outputs Puppetfile' do
-      pedit = described_class.new(path: File.join(fixtures_dir, 'Puppetfile'))
+      pedit = described_class.new(File.join(fixtures_dir, 'Puppetfile'))
       pedit.load
       expect(pedit.generate_puppetfile).to eq(<<~RUBY
         # Local modules
@@ -54,7 +54,7 @@ RSpec.describe PuppetfileEditor::Puppetfile do
     end
 
     it 'reformats Puppetfile properly' do
-      pedit = described_class.new(path: File.join(fixtures_dir, 'unformatted', 'Puppetfile'))
+      pedit = described_class.new(File.join(fixtures_dir, 'unformatted', 'Puppetfile'))
       pedit.load
       expect(pedit.generate_puppetfile).to eq(<<~RUBY
         # Local modules
@@ -92,7 +92,7 @@ RSpec.describe PuppetfileEditor::Puppetfile do
   end
 
   describe '#update_module' do
-    pedit = described_class.new(path: File.join(fixtures_dir, 'Puppetfile'))
+    pedit = described_class.new(File.join(fixtures_dir, 'Puppetfile'))
     pedit.load
     it 'updates git module tag' do
       pedit.update_module('nginx', 'tag', '1.2')

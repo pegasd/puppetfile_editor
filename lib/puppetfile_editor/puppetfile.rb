@@ -14,7 +14,7 @@ module PuppetfileEditor
     attr_reader :module_sections
 
     # @param [String] path path to Puppetfile
-    def initialize(path: 'Puppetfile', from_stdin: false, old_hashes: false)
+    def initialize(path = 'Puppetfile', from_stdin = false, old_hashes = false)
       @puppetfile_path = path
       @from_stdin      = from_stdin
       @old_hashes      = old_hashes

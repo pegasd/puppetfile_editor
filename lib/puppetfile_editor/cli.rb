@@ -4,7 +4,7 @@ module PuppetfileEditor
   # CLI methods
   class CLI
     def initialize(pfile_path)
-      @pfile  = PuppetfileEditor::Puppetfile.new(path: pfile_path)
+      @pfile  = PuppetfileEditor::Puppetfile.new(pfile_path)
       @logger = PuppetfileEditor::Logging.new
       begin
         @pfile.load
@@ -49,7 +49,7 @@ module PuppetfileEditor
     end
 
     def merge(opts)
-      @pfdata = PuppetfileEditor::Puppetfile.new(from_stdin: true)
+      @pfdata = PuppetfileEditor::Puppetfile.new(nil, true)
       @pfdata.load
       new_mod_types = @pfdata.modules.values.group_by(&:type)
       new_mod_types.each do |mod_type, mods|
