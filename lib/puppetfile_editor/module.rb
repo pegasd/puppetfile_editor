@@ -31,45 +31,45 @@ module PuppetfileEditor
     def set(param, newvalue, force = false)
       case @type
         when :hg, :git
-          if %w[branch tag ref].include? param
+          if !force && (@params.key?(:branch) || @params.key?(:ref))
+            set_message("kept at (#{full_version})", :wont_upgrade)
+          elsif !%w[branch tag ref].include? param
+            set_message("only 'branch', 'tag', and 'ref' are supported for '#{@type}' modules.", :unsupported)
+          else
+            set_message("updated (#{full_version} to #{param}: #{newvalue}", :updated)
             @params.delete :branch
             @params.delete :tag
             @params.delete :ref
             @params[param.to_sym] = newvalue
             calculate_indent
-          else
-            raise StandardError, "Only 'branch', 'tag', and 'ref' are supported for '#{@type}' modules."
           end
         when :forge
           if param == 'version'
             @params[:version] = newvalue
+            set_message("successfully set #{param} to #{newvalue} for #{@name}.", :updated)
           else
-            raise StandardError, "Only 'version' is supported for forge modules."
+            set_message("only 'version' is supported for forge modules.", :unsupported)
           end
         else
-          raise StandardError, "Editing params for '#{@type}' modules is not supported."
+          set_message("editing params for '#{@type}' modules is not supported.", :unsupported)
       end
     end
 
     def merge_with(mod, force = false)
       unless mod.type == @type
-        @status = :type_mismatched
-        raise(StandardError, "type mismatch ('#{@type}' vs '#{mod.type}')")
+        set_message("type mismatch ('#{@type}' vs '#{mod.type}')", :type_mismatched)
       end
       case @type
         when :hg, :git
           new = mod.params.reject { |param, _| param.eql? @type }
           if !force && new.keys == [:tag] && (@params.key?(:branch) || @params.key?(:ref))
-            @status = :wont_upgrade
-            raise(StandardError, "kept at #{full_version}")
+            set_message("kept at #{full_version}", :wont_upgrade)
           end
           if full_version == mod.full_version
-            @message = "versions match (#{full_version})"
-            @status  = :matched
+            set_message("versions match (#{full_version})", :matched)
             return
           else
-            @message = "updated (#{full_version} to #{mod.full_version})"
-            @status  = :updated
+            set_message("updated (#{full_version} to #{mod.full_version})", :updated)
           end
           @params.delete_if { |param, _| [:branch, :tag, :ref].include? param }
           @params.merge!(new)
@@ -77,22 +77,18 @@ module PuppetfileEditor
         when :forge
           unless force
             if mod.params.nil? or mod.params.is_a? Symbol
-              @status = :wont_upgrade
-              raise(StandardError, "won't upgrade to #{mod.full_version}")
+              set_message("won't upgrade to #{mod.full_version}", :wont_upgrade)
             end
           end
           if full_version == mod.full_version
-            @message = "versions match (#{full_version})"
-            @status  = :matched
+            set_message("versions match (#{full_version})", :matched)
             return
           else
-            @message = "updated (#{full_version} to #{mod.full_version})"
-            @status  = :updated
+            set_message("updated (#{full_version} to #{mod.full_version})", :updated)
           end
           @params = mod.params
         else
-          @status = :skipped
-          raise(StandardError, 'only git, forge, and hg modules are supported for merging')
+          set_message('only git, forge, and hg modules are supported for merging', :skipped)
       end
     end
 
@@ -137,6 +133,11 @@ module PuppetfileEditor
         else
           nil
       end
+    end
+
+    def set_message(message, status)
+      @message = message
+      @status = status
     end
 
     private

@@ -35,7 +35,7 @@ module PuppetfileEditor
       puppetfile_contents = if @from_stdin
                               $stdin.gets(nil).chomp
                             else
-                              raise(IOError, "Puppetfile #{@puppetfile_path} missing or unreadable") unless File.readable?(@puppetfile_path)
+                              raise(IOError, "'#{@puppetfile_path}' is missing or unreadable") unless File.readable?(@puppetfile_path)
 
                               File.read @puppetfile_path
                             end
@@ -69,17 +69,11 @@ module PuppetfileEditor
       File.write(@puppetfile_path, generate_puppetfile) if @loaded
     end
 
-    def update_module(name, param, value, verbose = false)
+    def update_module(name, param, value)
       if @modules.key? name
-        begin
-          @modules[name].set(param, value)
-          puts "Successfully set #{param} to #{value} for #{name}." if verbose
-        rescue StandardError => e
-          warn e.message
-          exit 1
-        end
+        @modules[name].set(param, value)
       else
-        warn "Module #{name} does not exist in your Puppetfile"
+        raise StandardError, "Module #{name} does not exist in your Puppetfile"
       end
     end
 

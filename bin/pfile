@@ -8,14 +8,7 @@ filename = File.basename(__FILE__)
 # Display help if no arguments are specified
 ARGV.push('-h') if ARGV.empty?
 
-options = { puppetfile: 'Puppetfile' }
-OptionParser.new do |parser|
-  parser.banner = "Usage: #{filename} [options] [command] [command options]"
-  parser.on('-v', '--[no-]verbose', 'Run verbosely') { |v| options[:verbose] = v }
-  parser.on('-f', '--filename PUPPETFILE', 'Path to your Puppetfile.') do |puppetfile|
-    options[:puppetfile] = puppetfile
-  end
-end.order!
+options = { puppetfile: './Puppetfile' }
 
 subcommands = {
   'edit'   => OptionParser.new do |parser|
@@ -24,12 +17,7 @@ subcommands = {
       options[:name] = setting
     end
     parser.on('-u', '--update PARAM=VALUE', 'What to update') do |setting|
-      if (match = setting.match(/^(\w+)=([^=]+)$/))
-        options[:param], options[:value] = match[1], match[2]
-      else
-        warn 'Version must match PARAM=VALUE pattern'
-        exit 1
-      end
+      options[:version] = setting
     end
   end,
   'format' => OptionParser.new do |parser|
@@ -68,6 +56,20 @@ subcommands = {
     end
   end,
 }
+
+OptionParser.new do |parser|
+  parser.banner = "Usage: #{filename} [options] [command] [command options]"
+  parser.separator ''
+  parser.separator ' Supported commands:'
+  subcommands.keys.each do |command|
+    parser.separator "  * #{command}"
+  end
+  parser.separator ''
+  parser.separator ' Supported global options:'
+  parser.on('-p', '--puppetfile PUPPETFILE', 'Path to your Puppetfile.') do |puppetfile|
+    options[:puppetfile] = puppetfile
+  end
+end.order!
 
 command = ARGV.shift
 subcommands[command].order!

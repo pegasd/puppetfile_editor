@@ -9,18 +9,27 @@ module PuppetfileEditor
       begin
         @pfile.load
       rescue IOError, NoMethodError => e
-        warn_and_exit(e.message)
+        @logger.log_and_exit(e.message)
+      rescue StandardError => e
+        @logger.log_and_exit(e.message)
       end
     end
 
     def edit(opts)
       opts[:value] = :latest if opts[:value] == 'latest'
-      @pfile.update_module(
-        opts[:name],
-        opts[:param],
-        opts[:value],
-        opts[:verbose],
-      )
+      @logger.log_and_exit('Please specify module name') unless opts[:name].is_a?(String)
+      @logger.log_and_exit('Please specify version') unless opts[:version].is_a?(String)
+      if (match = opts[:version].match(/^(\w+)=([^=]+)$/))
+        param = match[1]
+        value = match[2]
+      else
+        @logger.log_and_exit('Version must match PARAM=VALUE pattern')
+      end
+      begin
+        @pfile.update_module(opts[:name], param, value)
+      rescue StandardError => e
+        @logger.log_and_exit(e.message)
+      end
       @pfile.dump
     end
 
@@ -50,7 +59,11 @@ module PuppetfileEditor
 
     def merge(opts)
       @pfdata = PuppetfileEditor::Puppetfile.new(nil, true)
-      @pfdata.load
+      begin
+        @pfdata.load
+      rescue SyntaxError
+        @logger.log_and_exit('Format error.')
+      end
       new_mod_types = @pfdata.modules.values.group_by(&:type)
       new_mod_types.each do |mod_type, mods|
         puts "\n   #{@pfile.module_sections[mod_type]}\n\n"
@@ -61,14 +74,11 @@ module PuppetfileEditor
         indent = mods.map(&:name).max_by(&:length).length
         mods.each do |mod|
           if @pfile.modules.key? mod.name
-            begin
-              @pfile.modules[mod.name].merge_with(mod, opts[:force])
-              @logger.module_log(mod.name, indent, @pfile.modules[mod.name].message, @pfile.modules[mod.name].status)
-            rescue StandardError => e
-              @logger.module_log(mod.name, indent, e.message, @pfile.modules[mod.name].status)
-            end
+            @pfile.modules[mod.name].merge_with(mod, opts[:force])
+            @logger.mod_message(@pfile.modules[mod.name], indent)
           else
-            @logger.module_log(mod.name, indent, 'does not exist in source Puppetfile', :not_found)
+            mod.set_message('does not exist in source Puppetfile', :not_found)
+            @logger.mod_message(mod, indent)
           end
         end
       end
@@ -94,6 +104,7 @@ module PuppetfileEditor
         not_found:       "[ \e[31;1mx\e[0m ]",
         type_mismatched: "[ \e[31;1mx\e[0m ]",
         wont_upgrade:    "[ \e[33;1m!\e[0m ]",
+        warn:            "[ \e[31;1m!!\e[0m ]",
         undef:           '',
       }
     end
@@ -107,8 +118,14 @@ module PuppetfileEditor
       puts "#{status} #{message}"
     end
 
-    def module_log(mod_name, indent, message, message_type = :undef)
-      log("#{mod_name.ljust(indent)} => #{message}", message_type)
+    def log_and_exit(message)
+      log(message, :warn)
+      exit 1
     end
+
+    def mod_message(mod, indent)
+      log("#{mod.name.ljust(indent)} => #{mod.message}", mod.status)
+    end
+
   end
 end

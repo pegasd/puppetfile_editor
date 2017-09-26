@@ -35,23 +35,51 @@ RSpec.describe PuppetfileEditor::Module do
   end
 
   describe '#set' do
-    it 'can update tag of git module' do
+    it 'updates tag of git module' do
       m = described_class.new('apt', git: 'https://github.com/puppetlabs/puppetlabs-apt', tag: '4.1.0')
       m.set('tag', '4.2.0')
       expect(m.params[:tag]).to eq('4.2.0')
     end
 
-    it 'can rewrite tag with branch for hg module' do
+    it 'rewrites tag with branch for hg module' do
       m = described_class.new('accounts', hg: 'https://hg.mycompany.net/puppet/accounts', tag: '0.10.0')
       m.set('branch', 'default')
       expect(m.params[:tag]).to be_nil
       expect(m.params[:branch]).to eq('default')
     end
 
-    it 'can update forge module version' do
+    it 'updates forge module version' do
       m = described_class.new('KyleAnderson/consul', '2.1.0')
       m.set('version', '2.2.0')
       expect(m.params[:version]).to eq('2.2.0')
+    end
+
+    it 'does not update branched hg module (without force)' do
+      m = described_class.new('apt', hg: 'url', branch: 'special')
+      m.set('tag', '0.1.1')
+      expect(m.params[:tag]).to be_nil
+      expect(m.params[:branch]).to eq('special')
+    end
+
+    it 'does not update branched git module (without force)' do
+      m = described_class.new('apt', git: 'url', branch: 'special')
+      m.set('tag', '0.1.1')
+      expect(m.params[:tag]).to be_nil
+      expect(m.params[:branch]).to eq('special')
+    end
+
+    it 'overrides branch with tag for hg module (with force)' do
+      m = described_class.new('apt', hg: 'url', branch: 'special')
+      m.set('tag', '0.1.1', true)
+      expect(m.params[:tag]).to eq('0.1.1')
+      expect(m.params[:branch]).to be_nil
+    end
+
+    it 'overrides branch with tag for git module (with force)' do
+      m = described_class.new('apt', git: 'url', branch: 'special')
+      m.set('tag', '0.1.1', true)
+      expect(m.params[:tag]).to eq('0.1.1')
+      expect(m.params[:branch]).to be_nil
     end
   end
 
