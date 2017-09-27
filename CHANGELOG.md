@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Added
+- Puppetfile can be instantiated using provided contents.
+
 ### Changed
 - Removed named parameters from `Puppetfile#initialize` to support older Rubies.
 - Moved all IO to `Puppetfile::CLI`.
