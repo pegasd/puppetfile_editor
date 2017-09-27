@@ -35,7 +35,7 @@ module PuppetfileEditor
       puppetfile_contents = if @from_stdin
                               $stdin.gets(nil).chomp
                             elsif @contents
-                              contents
+                              @contents
                             else
                               raise(IOError, "'#{@puppetfile_path}' is missing or unreadable") unless File.readable?(@puppetfile_path)
                               File.read @puppetfile_path

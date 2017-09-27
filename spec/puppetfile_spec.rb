@@ -14,7 +14,18 @@ RSpec.describe PuppetfileEditor::Puppetfile do
     it 'loads basic Puppetfile' do
       pedit = described_class.new(File.join(fixtures_dir, 'Puppetfile'))
       pedit.load
-      expect(pedit.modules).to be_kind_of(Hash)
+      expect(pedit.modules.size).to eq(4)
+    end
+
+    it 'loads Puppetfile from contents' do
+      pedit = described_class.new('', false, <<~RUBY
+        mod 'nginx',
+            git: 'https://github.com/voxpupuli/puppet-nginx',
+            tag: '0.7.1'
+      RUBY
+      )
+      pedit.load
+      expect(pedit.modules.size).to eq(1)
     end
 
     it 'fails when file does not exist' do
