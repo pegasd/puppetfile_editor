@@ -28,6 +28,16 @@ RSpec.describe PuppetfileEditor::Puppetfile do
       expect(pedit.modules.size).to eq(1)
     end
 
+    it 'fails on broken contents' do
+      pedit = described_class.new('', false, <<~RUBY
+        nod 'nginx',
+            git: 'https://github.com/voxpupuli/puppet-nginx',
+            tag: '0.7.1'
+      RUBY
+      )
+      expect { pedit.load }.to raise_error(NoMethodError, /Unrecognized declaration: 'nod'/)
+    end
+
     it 'fails when file does not exist' do
       pedit = described_class.new(File.join(fixtures_dir, 'nonexistant', 'Puppetfile'))
       expect { pedit.load }.to raise_error(StandardError, /missing or unreadable/)
