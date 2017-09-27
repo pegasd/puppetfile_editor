@@ -14,10 +14,9 @@ module PuppetfileEditor
     attr_reader :module_sections
 
     # @param [String] path path to Puppetfile
-    def initialize(path = 'Puppetfile', from_stdin = false, old_hashes = false)
+    def initialize(path = 'Puppetfile', from_stdin = false, contents = nil)
       @puppetfile_path = path
       @from_stdin      = from_stdin
-      @old_hashes      = old_hashes
       @modules         = {}
       @loaded          = false
       @forge           = nil
@@ -57,7 +56,7 @@ module PuppetfileEditor
         next unless module_list.any?
         contents.push "# #{module_comment}"
         module_list.values.sort_by(&:name).each do |mod|
-          contents.push mod.dump(@old_hashes)
+          contents.push mod.dump
         end
         contents.push ''
       end
@@ -75,6 +74,10 @@ module PuppetfileEditor
       else
         raise StandardError, "Module #{name} does not exist in your Puppetfile"
       end
+    end
+
+    def compare_with(pfile)
+      pfile.modules.select { }
     end
 
     # @param [String] name Module name

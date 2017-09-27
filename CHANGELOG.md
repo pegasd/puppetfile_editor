@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Return earlier on `:matched` status so that no re-ordering of parameters can occur.
 - Various CLI logic issues.
 
+### Removed
+- No more old_hashes support.
+
 ## [0.2.0] - 2017-09-25
 ### Added
 - Merge function.

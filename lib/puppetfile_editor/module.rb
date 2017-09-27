@@ -92,7 +92,7 @@ module PuppetfileEditor
       end
     end
 
-    def dump(old_hashes = false)
+    def dump
       output = []
       case @type
         when :hg, :git
@@ -103,7 +103,7 @@ module PuppetfileEditor
                     else
                       "'#{param_value}'"
                     end
-            param = old_hashes ? ":#{param_name.to_s.ljust(@indent - 1)} =>" : "#{param_name}:".ljust(@indent)
+            param = "#{param_name}:".ljust(@indent)
             output.push "    #{param} #{value}"
           end
         when :local
