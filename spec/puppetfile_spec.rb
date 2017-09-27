@@ -12,49 +12,49 @@ RSpec.describe PuppetfileEditor::Puppetfile do
 
   describe '#load' do
     it 'loads basic Puppetfile' do
-      pedit = described_class.new(File.join(fixtures_dir, 'Puppetfile'))
-      pedit.load
-      expect(pedit.modules.size).to eq(4)
+      pf = described_class.new(File.join(fixtures_dir, 'Puppetfile'))
+      pf.load
+      expect(pf.modules.size).to eq(4)
     end
 
     it 'loads Puppetfile from contents' do
-      pedit = described_class.new('', false, <<~RUBY
+      pf = described_class.new('', false, <<~RUBY
         mod 'nginx',
             git: 'https://github.com/voxpupuli/puppet-nginx',
             tag: '0.7.1'
       RUBY
       )
-      pedit.load
-      expect(pedit.modules.size).to eq(1)
+      pf.load
+      expect(pf.modules.size).to eq(1)
     end
 
     it 'fails on broken contents' do
-      pedit = described_class.new('', false, <<~RUBY
+      pf = described_class.new('', false, <<~RUBY
         nod 'nginx',
             git: 'https://github.com/voxpupuli/puppet-nginx',
             tag: '0.7.1'
       RUBY
       )
-      expect { pedit.load }.to raise_error(NoMethodError, /Unrecognized declaration: 'nod'/)
+      expect { pf.load }.to raise_error(NoMethodError, /Unrecognized declaration: 'nod'/)
     end
 
     it 'fails when file does not exist' do
-      pedit = described_class.new(File.join(fixtures_dir, 'nonexistant', 'Puppetfile'))
-      expect { pedit.load }.to raise_error(StandardError, /missing or unreadable/)
+      pf = described_class.new(File.join(fixtures_dir, 'nonexistant', 'Puppetfile'))
+      expect { pf.load }.to raise_error(StandardError, /missing or unreadable/)
     end
 
     it 'fails when Puppetfile is broken' do
-      pedit = described_class.new(File.join(fixtures_dir, 'broken', 'Puppetfile'))
-      expect { pedit.load }
+      pf = described_class.new(File.join(fixtures_dir, 'broken', 'Puppetfile'))
+      expect { pf.load }
         .to raise_error(NoMethodError, /Unrecognized declaration: 'omg'/)
     end
   end
 
   describe '#generate_puppetfile' do
     it 'outputs Puppetfile' do
-      pedit = described_class.new(File.join(fixtures_dir, 'Puppetfile'))
-      pedit.load
-      expect(pedit.generate_puppetfile).to eq(<<~RUBY
+      pf = described_class.new(File.join(fixtures_dir, 'Puppetfile'))
+      pf.load
+      expect(pf.generate_puppetfile).to eq(<<~RUBY
         # Local modules
         mod 'config', :local
 
@@ -75,9 +75,9 @@ RSpec.describe PuppetfileEditor::Puppetfile do
     end
 
     it 'reformats Puppetfile properly' do
-      pedit = described_class.new(File.join(fixtures_dir, 'unformatted', 'Puppetfile'))
-      pedit.load
-      expect(pedit.generate_puppetfile).to eq(<<~RUBY
+      pf = described_class.new(File.join(fixtures_dir, 'unformatted', 'Puppetfile'))
+      pf.load
+      expect(pf.generate_puppetfile).to eq(<<~RUBY
         # Local modules
         mod 'celery', :local
         mod 'check_geoip', :local
@@ -113,21 +113,37 @@ RSpec.describe PuppetfileEditor::Puppetfile do
   end
 
   describe '#update_module' do
-    pedit = described_class.new(File.join(fixtures_dir, 'Puppetfile'))
-    pedit.load
+    pf = described_class.new(File.join(fixtures_dir, 'Puppetfile'))
+    pf.load
     it 'updates git module tag' do
-      pedit.update_module('nginx', 'tag', '1.2')
-      expect(pedit.modules['nginx'].params[:tag]).to eq('1.2')
+      pf.update_module('nginx', 'tag', '1.2')
+      expect(pf.modules['nginx'].params[:tag]).to eq('1.2')
     end
 
     it 'updates hg module tag' do
-      pedit.update_module('accounts', 'tag', '0.9.0')
-      expect(pedit.modules['accounts'].params[:tag]).to eq('0.9.0')
+      pf.update_module('accounts', 'tag', '0.9.0')
+      expect(pf.modules['accounts'].params[:tag]).to eq('0.9.0')
     end
 
     it 'updates forge module version' do
-      pedit.update_module('stdlib', 'version', '4.20.0')
-      expect(pedit.modules['stdlib'].params[:version]).to eq('4.20.0')
+      pf.update_module('stdlib', 'version', '4.20.0')
+      expect(pf.modules['stdlib'].params[:version]).to eq('4.20.0')
+    end
+  end
+
+  describe '#compare_with' do
+    it 'compares two Puppetfiles' do
+      pf = described_class.new(File.join(fixtures_dir, 'compare', 'source.Puppetfile'))
+      pf.load
+
+      pf_new = described_class.new(File.join(fixtures_dir, 'compare', 'new.Puppetfile'))
+      pf_new.load
+
+      expect(pf.compare_with(pf_new)).to eq(
+        'apache'   => { old: '2.0.0', new: '2.1.0' },
+        'nginx'    => { old: '0.7.0', new: '0.7.1' },
+        'rabbitmq' => { new: '7.0.0' },
+      )
     end
   end
 end

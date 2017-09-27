@@ -11,15 +11,15 @@ Gem::Specification.new do |spec|
   spec.email         = 'epiven@gmail.com'
   spec.homepage      = 'https://github.com/pegasd/puppetfile_editor'
   spec.summary       = 'Parse and edit Puppetfile'
+  spec.license       = 'MIT'
+  spec.files         = Dir['lib/**/*.rb', 'bin/pfile', 'README.md', 'CHANGELOG.md']
+  spec.bindir        = 'bin'
+  spec.executables   = 'pfile'
+  spec.require_paths = ['lib']
   spec.description   = <<-DESCRIPTION
     PuppetfileEditor provides an easy-to-use interface to check Puppetfile for validity,
     update module versions, add, and remove modules.
   DESCRIPTION
-  spec.license       = 'MIT'
-  spec.files         = Dir['README.md', 'lib/**/*.rb', 'bin/pfile']
-  spec.bindir        = 'bin'
-  spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
-  spec.require_paths = ['lib']
 
   spec.add_development_dependency 'bundler', '~> 1'
   spec.add_development_dependency 'rake', '~> 12.0'

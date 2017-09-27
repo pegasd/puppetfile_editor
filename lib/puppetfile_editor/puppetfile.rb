@@ -78,6 +78,29 @@ module PuppetfileEditor
       end
     end
 
+    def compare_with(pf)
+      diff = {}
+      pf.modules.each do |mod_name, mod|
+        next unless [:git, :hg, :forge].include? mod.type
+        version_key = @type == :forge ? :version : :tag
+
+        unless @modules.key? mod_name
+          if mod.params.key?(version_key)
+            diff[mod_name] = { new: mod.params[version_key] }
+          end
+          next
+        end
+
+        local_mod = @modules[mod_name]
+
+        next unless mod.type == local_mod.type
+        next unless mod.params.key?(version_key) && local_mod.params.key?(version_key)
+        next if mod.params[version_key] == local_mod.params[version_key]
+        diff[mod_name] = { old: local_mod.params[version_key], new: mod.params[version_key] }
+      end
+      diff
+    end
+
     # @param [String] name Module name
     # @param [String, Hash] args Module arguments
     def add_module(name, args)
