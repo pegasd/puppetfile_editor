@@ -17,6 +17,7 @@ module PuppetfileEditor
     def initialize(path = 'Puppetfile', from_stdin = false, contents = nil)
       @puppetfile_path = path
       @from_stdin      = from_stdin
+      @contents        = contents
       @modules         = {}
       @loaded          = false
       @forge           = nil
@@ -33,9 +34,10 @@ module PuppetfileEditor
     def load
       puppetfile_contents = if @from_stdin
                               $stdin.gets(nil).chomp
+                            elsif @contents
+                              contents
                             else
                               raise(IOError, "'#{@puppetfile_path}' is missing or unreadable") unless File.readable?(@puppetfile_path)
-
                               File.read @puppetfile_path
                             end
 
@@ -74,10 +76,6 @@ module PuppetfileEditor
       else
         raise StandardError, "Module #{name} does not exist in your Puppetfile"
       end
-    end
-
-    def compare_with(pfile)
-      pfile.modules.select { }
     end
 
     # @param [String] name Module name
