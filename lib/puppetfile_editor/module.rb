@@ -58,12 +58,14 @@ module PuppetfileEditor
     def merge_with(mod, force = false)
       unless mod.type == @type
         set_message("type mismatch ('#{@type}' vs '#{mod.type}')", :type_mismatched)
+        return
       end
       case @type
         when :hg, :git
           new = mod.params.reject { |param, _| param.eql? @type }
-          if !force && new.keys == [:tag] && (@params.key?(:branch) || @params.key?(:ref))
+          if !force && new.keys == [:tag] && (!([:branch, :ref, :changeset] & @params.keys).empty?)
             set_message("kept at #{full_version}", :wont_upgrade)
+            return
           end
           if full_version == mod.full_version
             set_message("versions match (#{full_version})", :matched)
@@ -71,13 +73,14 @@ module PuppetfileEditor
           else
             set_message("updated (#{full_version} to #{mod.full_version})", :updated)
           end
-          @params.delete_if { |param, _| [:branch, :tag, :ref].include? param }
+          @params.delete_if { |param, _| [:branch, :tag, :ref, :changeset].include? param }
           @params.merge!(new)
           calculate_indent
         when :forge
           unless force
             if mod.params.nil? or mod.params.is_a? Symbol
               set_message("won't upgrade to #{mod.full_version}", :wont_upgrade)
+              return
             end
           end
           if full_version == mod.full_version
