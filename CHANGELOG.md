@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Changed
+- Color of `matched` output status changed to bright white so that other statuses stand out better.
+
 ### Fixed
 - Force update when using 'edit' command from CLI.
 
