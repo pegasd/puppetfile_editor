@@ -31,15 +31,16 @@ module PuppetfileEditor
     def set(param, newvalue, force = false)
       case @type
         when :hg, :git
-          if !force && (@params.key?(:branch) || @params.key?(:ref))
+          if !force && !([:branch, :ref, :changeset] & @params.keys).empty?
             set_message("kept at (#{full_version})", :wont_upgrade)
-          elsif !%w[branch tag ref].include? param
-            set_message("only 'branch', 'tag', and 'ref' are supported for '#{@type}' modules.", :unsupported)
+          elsif !%w[branch tag ref changeset].include? param
+            set_message("only 'branch', 'tag', 'ref', and 'changeset' are supported for '#{@type}' modules.", :unsupported)
           else
             set_message("updated (#{full_version} to #{param}: #{newvalue}", :updated)
             @params.delete :branch
             @params.delete :tag
             @params.delete :ref
+            @params.delete :changeset
             @params[param.to_sym] = newvalue
             calculate_indent
           end
@@ -63,7 +64,7 @@ module PuppetfileEditor
       case @type
         when :hg, :git
           new = mod.params.reject { |param, _| param.eql? @type }
-          if !force && new.keys == [:tag] && (!([:branch, :ref, :changeset] & @params.keys).empty?)
+          if !force && new.keys == [:tag] && !([:branch, :ref, :changeset] & @params.keys).empty?
             set_message("kept at #{full_version}", :wont_upgrade)
             return
           end
@@ -78,7 +79,7 @@ module PuppetfileEditor
           calculate_indent
         when :forge
           unless force
-            if mod.params.nil? or mod.params.is_a? Symbol
+            if mod.params.nil? || mod.params.is_a?(Symbol)
               set_message("won't upgrade to #{mod.full_version}", :wont_upgrade)
               return
             end
@@ -102,10 +103,10 @@ module PuppetfileEditor
           output.push "mod '#{full_title}'"
           @params.each do |param_name, param_value|
             value = if param_value == :latest
-                      ':latest'
-                    else
-                      "'#{param_value}'"
-                    end
+              ':latest'
+            else
+              "'#{param_value}'"
+            end
             param = "#{param_name}:".ljust(@indent)
             output.push "    #{param} #{value}"
           end
@@ -133,14 +134,12 @@ module PuppetfileEditor
         when :forge
           return @params[:version] if @params.key? :version
           nil
-        else
-          nil
       end
     end
 
     def set_message(message, status)
       @message = message
-      @status = status
+      @status  = status
     end
 
     private

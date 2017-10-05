@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Added
+- Support for setting `changeset` for git/hg modules.
+
 ### Changed
 - Color of `matched` output status changed to bright white so that other statuses stand out better.
 
