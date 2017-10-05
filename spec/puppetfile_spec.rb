@@ -14,7 +14,7 @@ RSpec.describe PuppetfileEditor::Puppetfile do
     it 'loads basic Puppetfile' do
       pf = described_class.new(File.join(fixtures_dir, 'Puppetfile'))
       pf.load
-      expect(pf.modules.size).to eq(4)
+      expect(pf.modules.size).to eq(6)
     end
 
     it 'loads Puppetfile from contents' do
@@ -63,10 +63,16 @@ RSpec.describe PuppetfileEditor::Puppetfile do
 
         # Mercurial modules
         mod 'accounts',
-            hg:  'https://hg.mycompany.net/puppet-accounts',
+            hg:  'https://hg.mycompany.net/puppet/accounts',
             tag: '0.8.0'
+        mod 'apache',
+            hg:     'https://hg.mycompany.net/puppet/apache',
+            branch: 'crazy_fix'
 
         # Git modules
+        mod 'mcollective',
+            git:    'https://github.com/voxpupuli/puppet-mcollective',
+            branch: 'puppet3'
         mod 'nginx',
             git: 'https://github.com/voxpupuli/puppet-nginx',
             tag: :latest
@@ -123,6 +129,16 @@ RSpec.describe PuppetfileEditor::Puppetfile do
     it 'updates hg module tag' do
       pf.update_module('accounts', 'tag', '0.9.0')
       expect(pf.modules['accounts'].params[:tag]).to eq('0.9.0')
+    end
+
+    it 'force overrides branch with tag for hg module' do
+      pf.update_module('apache', 'tag', '0.9.0')
+      expect(pf.modules['apache'].params[:tag]).to eq('0.9.0')
+    end
+
+    it 'force overrides branch with tag for git module' do
+      pf.update_module('mcollective', 'tag', 'v2.5.0')
+      expect(pf.modules['mcollective'].params[:tag]).to eq('v2.5.0')
     end
 
     it 'updates forge module version' do

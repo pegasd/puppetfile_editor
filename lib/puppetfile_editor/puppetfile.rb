@@ -72,7 +72,7 @@ module PuppetfileEditor
 
     def update_module(name, param, value)
       if @modules.key? name
-        @modules[name].set(param, value)
+        @modules[name].set(param, value, true)
       else
         raise StandardError, "Module #{name} does not exist in your Puppetfile"
       end
