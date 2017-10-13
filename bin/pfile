@@ -11,7 +11,7 @@ ARGV.push('-h') if ARGV.empty?
 options = { puppetfile: './Puppetfile' }
 
 subcommands = {
-  'edit'   => OptionParser.new do |parser|
+  'edit' => OptionParser.new do |parser|
     parser.banner = "Usage: #{filename} edit [options]"
     parser.on('-m', '--module-name NAME', 'Module name') do |setting|
       options[:name] = setting
@@ -29,7 +29,7 @@ subcommands = {
       options[:name] = setting
     end
   end,
-  'add'    => OptionParser.new do |parser|
+  'add' => OptionParser.new do |parser|
     parser.banner = "Usage: #{filename} add [options]"
     parser.on('-m', '--module-name NAME', 'Module name') do |setting|
       options[:name] = setting
@@ -42,7 +42,8 @@ subcommands = {
     end
     parser.on('-u', '--version [PARAM=VALUE]', 'Version of module to add in the form of PARAM=VALUE') do |setting|
       if (match = setting.match(/^(\w+)=([^=]+)$/))
-        options[:param], options[:value] = match[1], match[2]
+        options[:param] = match[1]
+        options[:value] = match[2]
       elsif (match = setting.match(/^\d+(\.\d)*$/))
         options[:version] = match[0]
       else
@@ -51,7 +52,7 @@ subcommands = {
       end
     end
   end,
-  'merge'  => OptionParser.new do |parser|
+  'merge' => OptionParser.new do |parser|
     parser.banner = "Usage: #{filename} merge [options]"
     parser.separator '  Merge existing Puppetfile with another one from STDIN.'
     parser.separator '  Dump the result to STDOUT.'

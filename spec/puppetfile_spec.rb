@@ -7,7 +7,6 @@ RSpec.describe PuppetfileEditor::Puppetfile do
     it 'passes initialization' do
       expect(described_class.new).to be_a_kind_of(PuppetfileEditor::Puppetfile)
     end
-
   end
 
   describe '#load' do

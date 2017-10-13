@@ -19,6 +19,9 @@ Style/FrozenStringLiteralComment:
 Style/SymbolArray:
   Description: Using percent style obscures symbolic intent of array's contents.
   EnforcedStyle: brackets
+Style/MethodMissing:
+  Description: We use method_missing for all unrecognizable patterns in Puppetfile.
+  Enabled: false
 
 # Layout
 Layout/ClosingParenthesisIndentation:
@@ -32,3 +35,11 @@ Metrics/BlockLength:
 Metrics/LineLength:
   Description: People have wide screens, use them.
   Max: 140
+Metrics/ClassLength:
+  Max: 300
+Metrics/AbcSize:
+  Max: 50
+Metrics/CyclomaticComplexity:
+  Max: 12
+Metrics/PerceivedComplexity:
+  Max: 15

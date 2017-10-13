@@ -1,4 +1,5 @@
 module PuppetfileEditor
+  # Module class represents a puppet module in Puppetfile
   class Module
     attr_reader :type
     attr_reader :params
@@ -30,29 +31,29 @@ module PuppetfileEditor
 
     def set(param, newvalue, force = false)
       case @type
-        when :hg, :git
-          if !force && !([:branch, :ref, :changeset] & @params.keys).empty?
-            set_message("kept at (#{full_version})", :wont_upgrade)
-          elsif !%w[branch tag ref changeset].include? param
-            set_message("only 'branch', 'tag', 'ref', and 'changeset' are supported for '#{@type}' modules.", :unsupported)
-          else
-            set_message("updated (#{full_version} to #{param}: #{newvalue}", :updated)
-            @params.delete :branch
-            @params.delete :tag
-            @params.delete :ref
-            @params.delete :changeset
-            @params[param.to_sym] = newvalue
-            calculate_indent
-          end
-        when :forge
-          if param == 'version'
-            @params[:version] = newvalue
-            set_message("successfully set #{param} to #{newvalue} for #{@name}.", :updated)
-          else
-            set_message("only 'version' is supported for forge modules.", :unsupported)
-          end
+      when :hg, :git
+        if !force && !([:branch, :ref, :changeset] & @params.keys).empty?
+          set_message("kept at (#{full_version})", :wont_upgrade)
+        elsif !%w[branch tag ref changeset].include? param
+          set_message("only 'branch', 'tag', 'ref', and 'changeset' are supported for '#{@type}' modules.", :unsupported)
         else
-          set_message("editing params for '#{@type}' modules is not supported.", :unsupported)
+          set_message("updated (#{full_version} to #{param}: #{newvalue}", :updated)
+          @params.delete :branch
+          @params.delete :tag
+          @params.delete :ref
+          @params.delete :changeset
+          @params[param.to_sym] = newvalue
+          calculate_indent
+        end
+      when :forge
+        if param == 'version'
+          @params[:version] = newvalue
+          set_message("successfully set #{param} to #{newvalue} for #{@name}.", :updated)
+        else
+          set_message("only 'version' is supported for forge modules.", :unsupported)
+        end
+      else
+        set_message("editing params for '#{@type}' modules is not supported.", :unsupported)
       end
     end
 
@@ -62,62 +63,62 @@ module PuppetfileEditor
         return
       end
       case @type
-        when :hg, :git
-          new = mod.params.reject { |param, _| param.eql? @type }
-          if !force && new.keys == [:tag] && !([:branch, :ref, :changeset] & @params.keys).empty?
-            set_message("kept at #{full_version}", :wont_upgrade)
-            return
-          end
-          if full_version == mod.full_version
-            set_message("versions match (#{full_version})", :matched)
-            return
-          else
-            set_message("updated (#{full_version} to #{mod.full_version})", :updated)
-          end
-          @params.delete_if { |param, _| [:branch, :tag, :ref, :changeset].include? param }
-          @params.merge!(new)
-          calculate_indent
-        when :forge
-          unless force
-            if mod.params.nil? || mod.params.is_a?(Symbol)
-              set_message("won't upgrade to #{mod.full_version}", :wont_upgrade)
-              return
-            end
-          end
-          if full_version == mod.full_version
-            set_message("versions match (#{full_version})", :matched)
-            return
-          else
-            set_message("updated (#{full_version} to #{mod.full_version})", :updated)
-          end
-          @params = mod.params
+      when :hg, :git
+        new = mod.params.reject { |param, _| param.eql? @type }
+        if !force && new.keys == [:tag] && !([:branch, :ref, :changeset] & @params.keys).empty?
+          set_message("kept at #{full_version}", :wont_upgrade)
+          return
+        end
+        if full_version == mod.full_version
+          set_message("versions match (#{full_version})", :matched)
+          return
         else
-          set_message('only git, forge, and hg modules are supported for merging', :skipped)
+          set_message("updated (#{full_version} to #{mod.full_version})", :updated)
+        end
+        @params.delete_if { |param, _| [:branch, :tag, :ref, :changeset].include? param }
+        @params.merge!(new)
+        calculate_indent
+      when :forge
+        unless force
+          if mod.params.nil? || mod.params.is_a?(Symbol)
+            set_message("won't upgrade to #{mod.full_version}", :wont_upgrade)
+            return
+          end
+        end
+        if full_version == mod.full_version
+          set_message("versions match (#{full_version})", :matched)
+          return
+        else
+          set_message("updated (#{full_version} to #{mod.full_version})", :updated)
+        end
+        @params = mod.params
+      else
+        set_message('only git, forge, and hg modules are supported for merging', :skipped)
       end
     end
 
     def dump
       output = []
       case @type
-        when :hg, :git
-          output.push "mod '#{full_title}'"
-          @params.each do |param_name, param_value|
-            value = if param_value == :latest
-              ':latest'
-            else
-              "'#{param_value}'"
-            end
-            param = "#{param_name}:".ljust(@indent)
-            output.push "    #{param} #{value}"
-          end
-        when :local
-          output.push("mod '#{full_title}', :local")
+      when :hg, :git
+        output.push "mod '#{full_title}'"
+        @params.each do |param_name, param_value|
+          value = if param_value == :latest
+                    ':latest'
+                  else
+                    "'#{param_value}'"
+                  end
+          param = "#{param_name}:".ljust(@indent)
+          output.push "    #{param} #{value}"
+        end
+      when :local
+        output.push("mod '#{full_title}', :local")
+      else
+        if @params.nil?
+          output.push("mod '#{full_title}'")
         else
-          if @params.nil?
-            output.push("mod '#{full_title}'")
-          else
-            output.push("mod '#{full_title}', '#{@params[:version]}'")
-          end
+          output.push("mod '#{full_title}', '#{@params[:version]}'")
+        end
       end
       output.join(",\n")
     end
@@ -129,11 +130,11 @@ module PuppetfileEditor
 
     def full_version
       case @type
-        when :hg, :git
-          @params.reject { |param, _| param.eql? @type }.map { |param, value| "#{param}: #{value}" }.sort.join(', ')
-        when :forge
-          return @params[:version] if @params.key? :version
-          nil
+      when :hg, :git
+        @params.reject { |param, _| param.eql? @type }.map { |param, value| "#{param}: #{value}" }.sort.join(', ')
+      when :forge
+        return @params[:version] if @params.key? :version
+        nil
       end
     end
 

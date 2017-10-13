@@ -35,7 +35,6 @@ RSpec.describe PuppetfileEditor::Module do
   end
 
   describe '#set' do
-
     #
     # Git
     #

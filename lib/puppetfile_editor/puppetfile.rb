@@ -71,11 +71,9 @@ module PuppetfileEditor
     end
 
     def update_module(name, param, value)
-      if @modules.key? name
-        @modules[name].set(param, value, true)
-      else
-        raise StandardError, "Module #{name} does not exist in your Puppetfile"
-      end
+      raise StandardError, "Module #{name} does not exist in your Puppetfile" unless @modules.key? name
+
+      @modules[name].set(param, value, true)
     end
 
     def compare_with(pf)
