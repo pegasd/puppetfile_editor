@@ -108,6 +108,10 @@ module PuppetfileEditor
       @modules[mod.name] = mod
     end
 
+    def delete_module(name)
+      @modules.delete(name)
+    end
+
     def update_forge_url(url)
       raise StandardError, "Forge URL must be a String, but it is a #{url.class}" unless url.is_a? String
       @forge = url

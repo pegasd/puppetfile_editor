@@ -37,6 +37,13 @@ module PuppetfileEditor
       @pfile.dump
     end
 
+    def delete(opts)
+      warn_and_exit "Module #{opts[:name]} does not exist in your Puppetfile." unless @pfile.modules.key? opts[:name]
+
+      @pfile.delete_module(opts[:name])
+      @pfile.dump
+    end
+
     def add(opts)
       warn_and_exit "Module #{opts[:name]} is already present in your Puppetfile." if @pfile.modules.key? opts[:name]
 

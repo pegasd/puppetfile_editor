@@ -23,6 +23,12 @@ subcommands = {
   'format' => OptionParser.new do |parser|
     parser.banner = "Usage: #{filename} format"
   end,
+  'delete' => OptionParser.new do |parser|
+    parser.banner = "Usage: #{filename} format -m MODULENAME"
+    parser.on('-m', '--module-name NAME', 'Module name') do |setting|
+      options[:name] = setting
+    end
+  end,
   'add'    => OptionParser.new do |parser|
     parser.banner = "Usage: #{filename} add [options]"
     parser.on('-m', '--module-name NAME', 'Module name') do |setting|
