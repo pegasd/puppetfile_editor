@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe PuppetfileEditor::Puppetfile do
@@ -22,7 +24,7 @@ RSpec.describe PuppetfileEditor::Puppetfile do
             git: 'https://github.com/voxpupuli/puppet-nginx',
             tag: '0.7.1'
       RUBY
-      )
+                              )
       pf.load
       expect(pf.modules.size).to eq(1)
     end
@@ -33,7 +35,7 @@ RSpec.describe PuppetfileEditor::Puppetfile do
             git: 'https://github.com/voxpupuli/puppet-nginx',
             tag: '0.7.1'
       RUBY
-      )
+                              )
       expect { pf.load }.to raise_error(NoMethodError, /Unrecognized declaration: 'nod'/)
     end
 
@@ -76,7 +78,7 @@ RSpec.describe PuppetfileEditor::Puppetfile do
             git: 'https://github.com/voxpupuli/puppet-nginx',
             tag: :latest
       RUBY
-      )
+                                          )
     end
 
     it 'reformats Puppetfile properly' do
@@ -113,7 +115,7 @@ RSpec.describe PuppetfileEditor::Puppetfile do
             git: 'https://github.com/voxpupuli/puppet-nginx',
             tag: :latest
       RUBY
-      )
+                                          )
     end
   end
 

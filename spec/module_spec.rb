@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe PuppetfileEditor::Module do
@@ -112,12 +114,12 @@ RSpec.describe PuppetfileEditor::Module do
   describe '#dump' do
     it 'can dump git module' do
       m = described_class.new('apt', git: 'https://github.com/puppetlabs/puppetlabs-apt', branch: 'master')
-      expect(m.dump).to eq(<<~RUBY.chop!
+      expect(m.dump).to eq(<<~RUBY.chop
         mod 'apt',
             git:    'https://github.com/puppetlabs/puppetlabs-apt',
             branch: 'master'
       RUBY
-      )
+                          )
     end
   end
 end

@@ -15,7 +15,9 @@ Style/TrailingCommaInLiteral:
     and re-ordering nicer.
   EnforcedStyleForMultiline: comma
 Style/FrozenStringLiteralComment:
-  Enabled: false
+  Exclude:
+    - Rakefile
+    - Gemfile
 Style/SymbolArray:
   Description: Using percent style obscures symbolic intent of array's contents.
   EnforcedStyle: brackets
@@ -23,9 +25,6 @@ Style/MethodMissing:
   Description: We use method_missing for all unrecognizable patterns in Puppetfile.
   Enabled: false
 
-# Layout
-Layout/ClosingParenthesisIndentation:
-  Enabled: false
 
 # Metrics
 Metrics/MethodLength:

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PuppetfileEditor
   # Module class represents a puppet module in Puppetfile
   class Module

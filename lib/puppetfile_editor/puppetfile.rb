@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'puppetfile_editor/module'
 
 module PuppetfileEditor
