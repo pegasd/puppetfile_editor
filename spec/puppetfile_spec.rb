@@ -157,9 +157,10 @@ RSpec.describe PuppetfileEditor::Puppetfile do
       pf_new.load
 
       expect(pf.compare_with(pf_new)).to eq(
-        'apache'   => { old: '2.0.0', new: '2.1.0' },
-        'nginx'    => { old: '0.7.0', new: '0.7.1' },
-        'rabbitmq' => { new: '7.0.0' },
+        'apache'   => { old: '2.0.0', new: '2.1.0', type: :git },
+        'apt'      => { old: '4.1.0', new: '4.3.0', type: :forge },
+        'nginx'    => { old: '0.7.0', new: '0.7.1', type: :git },
+        'rabbitmq' => { new: '7.0.0', type: :git },
       )
     end
   end

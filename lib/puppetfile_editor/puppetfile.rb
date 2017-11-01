@@ -82,11 +82,11 @@ module PuppetfileEditor
       diff = {}
       pf.modules.each do |mod_name, mod|
         next unless [:git, :hg, :forge].include? mod.type
-        version_key = @type == :forge ? :version : :tag
+        version_key = mod.type == :forge ? :version : :tag
 
         unless @modules.key? mod_name
           if mod.params.key?(version_key)
-            diff[mod_name] = { new: mod.params[version_key] }
+            diff[mod_name] = { new: mod.params[version_key], type: mod.type }
           end
           next
         end
@@ -96,7 +96,7 @@ module PuppetfileEditor
         next unless mod.type == local_mod.type
         next unless mod.params.key?(version_key) && local_mod.params.key?(version_key)
         next if mod.params[version_key] == local_mod.params[version_key]
-        diff[mod_name] = { old: local_mod.params[version_key], new: mod.params[version_key] }
+        diff[mod_name] = { old: local_mod.params[version_key], new: mod.params[version_key], type: mod.type }
       end
       diff
     end

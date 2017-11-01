@@ -1,3 +1,4 @@
+mod 'puppetlabs/apt', '4.1.0'
 mod 'apache',
   git: 'https://github.com/puppetlabs/puppetlabs-apache',
   tag: '2.0.0'
