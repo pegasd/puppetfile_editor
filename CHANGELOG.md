@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.6.0] - 2017-11-01
+### Changed
+- `Puppetfile#compare_with` now stores module type in the resulting diff.
+
+### Fixed
+- `Puppetfile#compare_with` didn't properly work with forge modules. It does now.
+
 ## [0.5.0] - 2017-10-23
 ### Added
 - `delete` command for deleting modules from Puppetfile.
