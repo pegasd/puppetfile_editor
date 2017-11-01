@@ -69,7 +69,7 @@ OptionParser.new do |parser|
   parser.banner = "Usage: #{filename} [options] [command] [command options]"
   parser.separator ''
   parser.separator ' Supported commands:'
-  subcommands.keys.each do |command|
+  subcommands.each_key do |command|
     parser.separator "  * #{command}"
   end
   parser.separator ''
