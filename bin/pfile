@@ -9,7 +9,7 @@ filename = File.basename(__FILE__)
 # Display help if no arguments are specified
 ARGV.push('-h') if ARGV.empty?
 
-options = { puppetfile: './Puppetfile' }
+options = { puppetfile: 'Puppetfile' }
 
 subcommands = {
   'edit' => OptionParser.new do |parser|
