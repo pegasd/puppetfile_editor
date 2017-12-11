@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.6.1] - 2017-12-11
+### Fixed
+- Changed default CLI path to `Puppetfile` instead of `./Puppetfile` for better auditing.
+
 ## [0.6.0] - 2017-11-01
 ### Changed
 - `Puppetfile#compare_with` now stores module type in the resulting diff.
