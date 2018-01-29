@@ -3,24 +3,59 @@
 require 'spec_helper'
 
 stdin_puppetfile = <<~RUBY
-  mod 'accounts', tag: '0.9.0', :hg => 'https://hg.mycompany.net/puppet/accounts'
+  mod 'docker', tag: '1.0.4', git: 'https://github.com/puppetlabs/puppetlabs-docker'
   mod 'apache', tag: '2.1.0', git: 'https://github.com/puppetlabs/puppetlabs-apache'
-  mod 'monitoring', tag: '1.0.0', hg: 'https://hg.mycompany.net/puppet/monitoring'
-  mod 'nginx', tag: '1.0.0', hg: 'https://hg.mycompany.net/puppet/nginx'
   mod 'stdlib', tag: '4.20.0', git: 'https://github.com/puppetlabs/puppetlabs-stdlib'
+  mod 'ntp', tag: '7.0.0', git: 'https://github.com/puppetlabs/puppetlabs-ntp'
+
+  mod 'accounts', tag: '0.9.0', :hg => 'https://hg.mycompany.net/puppet/accounts'
+  mod 'monitoring', tag: '1.0.0', hg: 'https://hg.mycompany.net/puppet/monitoring'
+
+  mod 'puppetlabs/apt', '4.4.1'
+  mod 'puppetlabs/lvm', '1.0.0'
+
+  mod 'nginx', tag: '1.0.0', hg: 'https://hg.mycompany.net/puppet/nginx'
 RUBY
 
 RSpec.describe PuppetfileEditor::CLI do
   fixtures_dir = File.join(__dir__, 'fixtures')
   describe '#merge' do
-    it 'works' do
-      pf_cli = described_class.new(File.join(fixtures_dir, 'merge', 'Puppetfile'))
-      output = SpecHelper.stub_io(stdin_puppetfile) { pf_cli.merge(force: false, stdout: true) }
-      expect(output).to match(/accounts\s+=> updated \(tag: 0.8.0 to tag: 0.9.0\)$/)
+    pf_cli = described_class.new(File.join(fixtures_dir, 'merge', 'Puppetfile'))
+    output = SpecHelper.stub_io(stdin_puppetfile) { pf_cli.merge(force: false, stdout: true) }
+
+    # Git
+    it 'updates git module' do
+      expect(output).to match(/docker\s+=> updated \(tag: 1.0.3 to tag: 1.0.4\)/)
+    end
+    it 'does nothing about a non-existant git module' do
       expect(output).to match(/apache\s+=> does not exist in source Puppetfile$/)
-      expect(output).to match(/monitoring\s+=> kept at changeset: 19ab6af$/)
-      expect(output).to match(/nginx\s+=> type mismatch \('git' vs 'hg'\)$/)
+    end
+    it 'skips over a branched git module' do
       expect(output).to match(/stdlib\s+=> kept at branch: weird_fix$/)
+    end
+    it 'downgrades git module with a warning' do
+      expect(output).to match(/ntp\s+=> DOWNGRADED \(tag: 7.1.0-dev1 to tag: 7.0.0\)/)
+    end
+
+    # HG
+    it 'updates hg module' do
+      expect(output).to match(/accounts\s+=> updated \(tag: 0.8.0 to tag: 0.9.0\)$/)
+    end
+    it 'skips over a hg module locked at changeset' do
+      expect(output).to match(/monitoring\s+=> kept at changeset: 19ab6af$/)
+    end
+
+    # Forge
+    it 'updates forge module' do
+      expect(output).to match(/lvm\s+=> updated \(0.9.0 to 1.0.0\)/)
+    end
+    it 'downgrades forge module with a warning' do
+      expect(output).to match(/apt\s+=> DOWNGRADED \(4.5.0 to 4.4.1\)/)
+    end
+
+    # Type Mismatch
+    it 'warns about a mismatched module (git vs hg)' do
+      expect(output).to match(/nginx\s+=> type mismatch \('git' vs 'hg'\)$/)
     end
   end
 end
