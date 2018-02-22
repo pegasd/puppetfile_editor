@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.7.1] - 2018-02-22
+### Fixed
+- Fix for older rubies where `Gem::Version` broke for versions like `0.1.0-dev1`.
+
 ## [0.7.0] - 2018-02-15
 ### Added
 - Warn about downgrading forge, git, and hg modules while merging.
