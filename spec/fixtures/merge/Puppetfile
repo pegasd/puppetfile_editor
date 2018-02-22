@@ -10,6 +10,9 @@ mod 'stdlib',
 mod 'monitoring',
   hg:        'https://hg.mycompany.net/puppet/monitoring',
   changeset: '19ab6af'
+mod 'logging',
+  hg:  'https://hg.mycompany.net/puppet/logging',
+  tag: '0.13.0'
 mod 'puppetlabs/apt', '4.5.0'
 mod 'puppetlabs/lvm', '0.9.0'
 mod 'ntp', :git => 'https://github.com/puppetlabs/puppetlabs-ntp', :tag => '7.1.0-dev1'

@@ -10,6 +10,7 @@ stdin_puppetfile = <<~RUBY
 
   mod 'accounts', tag: '0.9.0', :hg => 'https://hg.mycompany.net/puppet/accounts'
   mod 'monitoring', tag: '1.0.0', hg: 'https://hg.mycompany.net/puppet/monitoring'
+  mod 'logging', tag: '0.14.0-dev1', hg: 'https://hg.mycompany.net/puppet/logging'
 
   mod 'puppetlabs/apt', '4.4.1'
   mod 'puppetlabs/lvm', '1.0.0'
@@ -40,6 +41,9 @@ RSpec.describe PuppetfileEditor::CLI do
     # HG
     it 'updates hg module' do
       expect(output).to match(/accounts\s+=> updated \(tag: 0.8.0 to tag: 0.9.0\)$/)
+    end
+    it 'updates hg module with a dev tag' do
+      expect(output).to match(/logging\s+=> updated \(tag: 0.13.0 to tag: 0.14.0-dev1\)$/)
     end
     it 'skips over a hg module locked at changeset' do
       expect(output).to match(/monitoring\s+=> kept at changeset: 19ab6af$/)

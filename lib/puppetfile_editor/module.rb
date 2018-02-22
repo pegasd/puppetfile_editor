@@ -74,11 +74,23 @@ module PuppetfileEditor
         if full_version == mod.full_version
           set_message("versions match (#{full_version})", :matched)
           return
-        elsif Gem::Version.new(full_version.sub('tag: ', '')) > Gem::Version.new(mod.full_version.sub('tag: ', ''))
-          set_message("DOWNGRADED (#{full_version} to #{mod.full_version})", :downgrade)
-        else
-          set_message("updated (#{full_version} to #{mod.full_version})", :updated)
         end
+
+        begin
+          old_version = Gem::Version.new(full_version.sub('tag: ', ''))
+          new_version = Gem::Version.new(mod.full_version.sub('tag: ', ''))
+        rescue ArgumentError
+          # Older rubies throw ArgumentError when version is '0.1.0-dev1', for example.
+          # Sad.
+          set_message("could not compare versions, so updating (#{full_version} to #{mod.full_version})", :updated)
+        else
+          if old_version > new_version
+            set_message("DOWNGRADED (#{full_version} to #{mod.full_version})", :downgrade)
+          else
+            set_message("updated (#{full_version} to #{mod.full_version})", :updated)
+          end
+        end
+
         @params.delete_if { |param, _| [:branch, :tag, :ref, :changeset].include? param }
         @params.merge!(new)
         calculate_indent
@@ -110,10 +122,10 @@ module PuppetfileEditor
         output.push "mod '#{full_title}'"
         @params.each do |param_name, param_value|
           value = if param_value == :latest
-                    ':latest'
-                  else
-                    "'#{param_value}'"
-                  end
+            ':latest'
+          else
+            "'#{param_value}'"
+          end
           param = "#{param_name}:".ljust(@indent)
           output.push "    #{param} #{value}"
         end
