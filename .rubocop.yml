@@ -5,6 +5,10 @@ AllCops:
   TargetRubyVersion: 2.3
   DisplayCopNames: true
 
+# Layout
+Layout/EmptyLinesAroundArguments:
+  Description: I like multiline strings.
+  Enabled: false
 # Style
 Style/TrailingCommaInArguments:
   Description: Prefer always trailing comma on multiline argument lists. This makes

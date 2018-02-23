@@ -85,9 +85,7 @@ module PuppetfileEditor
         version_key = mod.type == :forge ? :version : :tag
 
         unless @modules.key? mod_name
-          if mod.params.key?(version_key)
-            diff[mod_name] = { new: mod.params[version_key], type: mod.type }
-          end
+          diff[mod_name] = { new: mod.params[version_key], type: mod.type } if mod.params.key?(version_key)
           next
         end
 
