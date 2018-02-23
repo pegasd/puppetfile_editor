@@ -7,6 +7,10 @@ rvm:
   - 2.4.2
   - 2.5.0
 
+stages:
+  - rubocop
+  - test
+
 jobs:
   include:
     - stage: rubocop
