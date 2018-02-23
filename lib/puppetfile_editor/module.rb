@@ -122,10 +122,10 @@ module PuppetfileEditor
         output.push "mod '#{full_title}'"
         @params.each do |param_name, param_value|
           value = if param_value == :latest
-            ':latest'
-          else
-            "'#{param_value}'"
-          end
+                    ':latest'
+                  else
+                    "'#{param_value}'"
+                  end
           param = "#{param_name}:".ljust(@indent)
           output.push "    #{param} #{value}"
         end
