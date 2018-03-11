@@ -35,7 +35,7 @@ module PuppetfileEditor
       @pfile.dump
     end
 
-    def format(_)
+    def format(_why_am_i_here)
       @pfile.dump
     end
 

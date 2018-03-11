@@ -11,12 +11,13 @@ Layout/EmptyLinesAroundArguments:
   Enabled: false
 # Style
 Style/TrailingCommaInArguments:
-  Description: Prefer always trailing comma on multiline argument lists. This makes
-    diffs, and re-ordering nicer.
+  Description: Trailing commas are nice for diffs.
   EnforcedStyleForMultiline: comma
-Style/TrailingCommaInLiteral:
-  Description: Prefer always trailing comma on multiline literals. This makes diffs,
-    and re-ordering nicer.
+Style/TrailingCommaInArrayLiteral:
+  Description: Trailing commas are nice for diffs.
+  EnforcedStyleForMultiline: comma
+Style/TrailingCommaInHashLiteral:
+  Description: Trailing commas are nice for diffs.
   EnforcedStyleForMultiline: comma
 Style/FrozenStringLiteralComment:
   Exclude:

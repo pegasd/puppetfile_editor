@@ -78,9 +78,9 @@ module PuppetfileEditor
       @modules[name].set(param, value, true)
     end
 
-    def compare_with(pf)
+    def compare_with(pfile)
       diff = {}
-      pf.modules.each do |mod_name, mod|
+      pfile.modules.each do |mod_name, mod|
         next unless [:git, :hg, :forge].include? mod.type
         version_key = mod.type == :forge ? :version : :tag
 
@@ -132,7 +132,7 @@ module PuppetfileEditor
       @librarian.update_forge_url(url)
     end
 
-    def method_missing(method, *_)
+    def method_missing(method, *_why_am_i_here)
       raise NoMethodError, "Unrecognized declaration: '#{method}'"
     end
   end
