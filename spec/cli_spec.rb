@@ -35,7 +35,7 @@ RSpec.describe PuppetfileEditor::CLI do
       expect(output).to match(/stdlib\s+=> kept at branch: weird_fix$/)
     end
     it 'downgrades git module with a warning' do
-      expect(output).to match(/ntp\s+=> DOWNGRADED \(tag: 7.1.0-dev1 to tag: 7.0.0\)/)
+      expect(output).to match(/ntp\s+=> not downgrading \(tag: 7.1.0-dev1 to tag: 7.0.0\)/)
     end
 
     # HG
