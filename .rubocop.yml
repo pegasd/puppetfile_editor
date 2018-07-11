@@ -26,7 +26,7 @@ Style/FrozenStringLiteralComment:
 Style/SymbolArray:
   Description: Using percent style obscures symbolic intent of array's contents.
   EnforcedStyle: brackets
-Style/MethodMissing:
+Style/MethodMissingSuper:
   Description: We use method_missing for all unrecognizable patterns in Puppetfile.
   Enabled: false
 

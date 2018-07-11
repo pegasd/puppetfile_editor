@@ -132,6 +132,8 @@ module PuppetfileEditor
       @librarian.update_forge_url(url)
     end
 
+    def respond_to_missing?(method, include_private); end
+
     def method_missing(method, *_why_am_i_here)
       raise NoMethodError, "Unrecognized declaration: '#{method}'"
     end
