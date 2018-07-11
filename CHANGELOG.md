@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Changed
-- GH-1: Do not downgrade modules while merging, whenever possible (see issue for more details).
+- [#1](https://github.com/pegasd/puppetfile_editor/issues/1): Do not downgrade modules while merging, whenever possible (see issue for more details).
 
 
 ## [0.7.1] - 2018-02-22
