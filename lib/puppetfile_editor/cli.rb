@@ -116,7 +116,6 @@ module PuppetfileEditor
         not_found:       "[ \e[31;1mx\e[0m ]",
         type_mismatched: "[ \e[31;1mx\e[0m ]",
         wont_upgrade:    "[ \e[33;1m!\e[0m ]",
-        downgrade:       "[ \e[31;1m!\e[0m ]",
         warn:            "[ \e[31;1m!!\e[0m ]",
         undef:           '',
       }

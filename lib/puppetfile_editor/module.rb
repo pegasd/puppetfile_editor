@@ -85,7 +85,8 @@ module PuppetfileEditor
           set_message("could not compare versions, so updating (#{full_version} to #{mod.full_version})", :updated)
         else
           if old_version > new_version
-            set_message("DOWNGRADED (#{full_version} to #{mod.full_version})", :downgrade)
+            set_message("not downgrading (#{full_version} > #{mod.full_version})", :matched)
+            return
           else
             set_message("updated (#{full_version} to #{mod.full_version})", :updated)
           end
@@ -105,7 +106,8 @@ module PuppetfileEditor
           set_message("versions match (#{full_version})", :matched)
           return
         elsif Gem::Version.new(full_version) > Gem::Version.new(mod.full_version)
-          set_message("DOWNGRADED (#{full_version} to #{mod.full_version})", :downgrade)
+          set_message("not downgrading (#{full_version} > #{mod.full_version})", :matched)
+          return
         else
           set_message("updated (#{full_version} to #{mod.full_version})", :updated)
         end

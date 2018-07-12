@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+### Changed
+- [#1](https://github.com/pegasd/puppetfile_editor/issues/1): Do not downgrade modules while merging, whenever possible (see issue for more details).
+
+
 ## [0.7.1] - 2018-02-22
 ### Fixed
 - Fix for older rubies where `Gem::Version` broke for versions like `0.1.0-dev1`.
