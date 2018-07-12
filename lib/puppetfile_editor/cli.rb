@@ -113,7 +113,7 @@ module PuppetfileEditor
         updated:         "[ \e[32;1m+\e[0m ]",
         matched:         "[ \e[0;1m=\e[0m ]",
         skipped:         "[ \e[33;1m~\e[0m ]",
-        not_found:       "[ \e[31;1mx\e[0m ]",
+        not_found:       "[ \e[0;1m-\e[0m ]",
         type_mismatched: "[ \e[31;1mx\e[0m ]",
         wont_upgrade:    "[ \e[33;1m!\e[0m ]",
         warn:            "[ \e[31;1m!!\e[0m ]",
