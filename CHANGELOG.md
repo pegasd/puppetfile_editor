@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [0.9.0] - 2019-08-06
 ### Changed
 - Add ability to compare Puppetfiles ignoring module types (`git` vs `hg`).
 
