@@ -12,7 +12,7 @@ ARGV.push('-h') if ARGV.empty?
 options = { puppetfile: 'Puppetfile' }
 
 subcommands = {
-  'edit' => OptionParser.new do |parser|
+  'edit'   => OptionParser.new do |parser|
     parser.banner = "Usage: #{filename} edit [options]"
     parser.on('-m', '--module-name NAME', 'Module name') do |setting|
       options[:name] = setting
@@ -30,7 +30,7 @@ subcommands = {
       options[:name] = setting
     end
   end,
-  'add' => OptionParser.new do |parser|
+  'add'    => OptionParser.new do |parser|
     parser.banner = "Usage: #{filename} add [options]"
     parser.on('-m', '--module-name NAME', 'Module name') do |setting|
       options[:name] = setting
@@ -53,7 +53,7 @@ subcommands = {
       end
     end
   end,
-  'merge' => OptionParser.new do |parser|
+  'merge'  => OptionParser.new do |parser|
     parser.banner = "Usage: #{filename} merge [options]"
     parser.separator '  Merge existing Puppetfile with another one from STDIN.'
     parser.separator '  Dump the result to STDOUT.'

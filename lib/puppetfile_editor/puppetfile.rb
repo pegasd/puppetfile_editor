@@ -34,14 +34,15 @@ module PuppetfileEditor
     end
 
     def load
-      puppetfile_contents = if @from_stdin
-                              $stdin.gets(nil).chomp
-                            elsif @contents
-                              @contents
-                            else
-                              raise(IOError, "'#{@puppetfile_path}' is missing or unreadable") unless File.readable?(@puppetfile_path)
-                              File.read @puppetfile_path
-                            end
+      if @from_stdin
+        puppetfile_contents = $stdin.gets(nil).chomp
+      elsif @contents
+        puppetfile_contents = @contents
+      else
+        raise(IOError, "'#{@puppetfile_path}' is missing or unreadable") unless File.readable?(@puppetfile_path)
+
+        puppetfile_contents = File.read @puppetfile_path
+      end
 
       dsl = PuppetfileEditor::DSL.new(self)
       dsl.instance_eval(puppetfile_contents)
@@ -58,6 +59,7 @@ module PuppetfileEditor
       @module_sections.each do |module_type, module_comment|
         module_list = modules.select { |_, mod| mod.type == module_type }
         next unless module_list.any?
+
         contents.push "# #{module_comment}"
         module_list.values.sort_by(&:name).each do |mod|
           contents.push mod.dump
@@ -82,7 +84,8 @@ module PuppetfileEditor
       diff = {}
       pfile.modules.each do |mod_name, mod|
         next unless [:git, :hg, :forge].include? mod.type
-        version_key = mod.type == :forge ? :version : :tag
+
+        mod.type == :forge ? version_key = :version : version_key = :tag
 
         unless @modules.key? mod_name
           diff[mod_name] = { new: mod.params[version_key], type: mod.type } if mod.params.key?(version_key)
@@ -96,6 +99,7 @@ module PuppetfileEditor
         end
         next unless mod.params.key?(version_key) && local_mod.params.key?(version_key)
         next if mod.params[version_key] == local_mod.params[version_key]
+
         diff[mod_name] = { old: local_mod.params[version_key], new: mod.params[version_key], type: mod.type }
       end
       diff
@@ -114,6 +118,7 @@ module PuppetfileEditor
 
     def update_forge_url(url)
       raise StandardError, "Forge URL must be a String, but it is a #{url.class}" unless url.is_a? String
+
       @forge = url
     end
   end

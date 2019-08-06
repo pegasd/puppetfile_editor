@@ -123,11 +123,11 @@ module PuppetfileEditor
       when :hg, :git
         output.push "mod '#{full_title}'"
         @params.each do |param_name, param_value|
-          value = if param_value == :latest
-                    ':latest'
-                  else
-                    "'#{param_value}'"
-                  end
+          if param_value == :latest
+            value = ':latest'
+          else
+            value = "'#{param_value}'"
+          end
           param = "#{param_name}:".ljust(@indent)
           output.push "    #{param} #{value}"
         end
@@ -145,6 +145,7 @@ module PuppetfileEditor
 
     def full_title
       return "#{@author}/#{@name}" if @author
+
       @name
     end
 
@@ -154,6 +155,7 @@ module PuppetfileEditor
         @params.reject { |param, _| param.eql? @type }.map { |param, value| "#{param}: #{value}" }.sort.join(', ')
       when :forge
         return @params[:version] if @params.key? :version
+
         nil
       end
     end

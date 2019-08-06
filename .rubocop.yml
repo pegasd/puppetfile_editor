@@ -5,45 +5,59 @@ AllCops:
   TargetRubyVersion: 2.3
   DisplayCopNames: true
 
-# Layout
-Layout/EmptyLinesAroundArguments:
-  Description: I like multiline strings.
-  Enabled: false
 # Style
-Style/TrailingCommaInArguments:
-  Description: Trailing commas are nice for diffs.
-  EnforcedStyleForMultiline: comma
-Style/TrailingCommaInArrayLiteral:
-  Description: Trailing commas are nice for diffs.
-  EnforcedStyleForMultiline: comma
-Style/TrailingCommaInHashLiteral:
-  Description: Trailing commas are nice for diffs.
-  EnforcedStyleForMultiline: comma
+Style/ConditionalAssignment:
+  Description: This looks way more readable.
+  EnforcedStyle: assign_inside_condition
 Style/FrozenStringLiteralComment:
-  Exclude:
-    - Rakefile
-    - Gemfile
-Style/SymbolArray:
-  Description: Using percent style obscures symbolic intent of array's contents.
-  EnforcedStyle: brackets
+  Enabled: false
 Style/MethodMissingSuper:
   Description: We use method_missing for all unrecognizable patterns in Puppetfile.
   Enabled: false
+Style/NumericLiterals:
+  Description: Counter-intuitive for port numbers.
+  Enabled: false
+Style/TrailingCommaInArguments:
+  EnforcedStyleForMultiline: comma
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: comma
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: comma
+Style/SpecialGlobalVars:
+  Description: These look kinda scary.
+  Enabled: false
+Style/SymbolArray:
+  Description: Using percent style obscures symbolic intent of array's contents.
+  EnforcedStyle: brackets
+Style/FormatStringToken:
+  Description: Hiera doesn't like this restriction.
+  Enabled: false
 
+# Layout
+Layout/ClosingParenthesisIndentation:
+  Enabled: false
+Layout/AlignHash:
+  EnforcedColonStyle: table
+  EnforcedHashRocketStyle: table
 
 # Metrics
-Metrics/MethodLength:
-  Max: 70
-Metrics/BlockLength:
-  Max: 300
 Metrics/LineLength:
   Description: People have wide screens, use them.
-  Max: 140
-Metrics/ClassLength:
-  Max: 300
+  Max: 200
 Metrics/AbcSize:
-  Max: 70
+  Enabled: false
+Metrics/BlockLength:
+  Enabled: false
+Metrics/ClassLength:
+  Enabled: false
 Metrics/CyclomaticComplexity:
-  Max: 20
+  Enabled: false
+Metrics/MethodLength:
+  Enabled: false
+Metrics/ModuleLength:
+  Enabled: false
+Metrics/ParameterLists:
+  Enabled: false
 Metrics/PerceivedComplexity:
-  Max: 20
+  Enabled: false
+...

@@ -55,7 +55,7 @@ RSpec.describe PuppetfileEditor::Puppetfile do
     it 'outputs Puppetfile' do
       pf = described_class.new(File.join(fixtures_dir, 'Puppetfile'))
       pf.load
-      expect(pf.generate_puppetfile).to eq(<<~RUBY
+      expect(pf.generate_puppetfile).to eq(<<~RUBY,
         # Local modules
         mod 'config', :local
 
@@ -84,7 +84,7 @@ RSpec.describe PuppetfileEditor::Puppetfile do
     it 'reformats Puppetfile properly' do
       pf = described_class.new(File.join(fixtures_dir, 'unformatted', 'Puppetfile'))
       pf.load
-      expect(pf.generate_puppetfile).to eq(<<~RUBY
+      expect(pf.generate_puppetfile).to eq(<<~RUBY,
         # Local modules
         mod 'celery', :local
         mod 'check_geoip', :local

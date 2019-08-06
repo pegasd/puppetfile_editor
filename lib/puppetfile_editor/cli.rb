@@ -122,11 +122,11 @@ module PuppetfileEditor
     end
 
     def log(message, message_type = :undef)
-      status = if @statuses.key? message_type
-                 @statuses[message_type]
-               else
-                 @statuses[:undef]
-               end
+      if @statuses.key? message_type
+        status = @statuses[message_type]
+      else
+        status = @statuses[:undef]
+      end
       puts "#{status} #{message}"
     end
 
