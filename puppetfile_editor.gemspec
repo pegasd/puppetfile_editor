@@ -23,8 +23,8 @@ Gem::Specification.new do |spec|
     update module versions, add, and remove modules.
   DESCRIPTION
 
-  spec.add_development_dependency 'bundler', '~> 1'
-  spec.add_development_dependency 'rake', '~> 12.0'
-  spec.add_development_dependency 'rspec', '~> 3.0'
-  spec.add_development_dependency 'rubocop', '> 0.50'
+  spec.add_development_dependency 'bundler'
+  spec.add_development_dependency 'rake'
+  spec.add_development_dependency 'rspec'
+  spec.add_development_dependency 'rubocop'
 end
