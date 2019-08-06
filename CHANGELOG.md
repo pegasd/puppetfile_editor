@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+### Changed
+- Add ability to compare Puppetfiles ignoring module types (`git` vs `hg`).
+
 ## [0.8.0] - 2018-07-12
 ### Changed
 - [#1](https://github.com/pegasd/puppetfile_editor/issues/1): Do not downgrade modules while merging, whenever possible (see issue for more details).

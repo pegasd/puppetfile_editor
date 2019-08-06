@@ -78,7 +78,7 @@ module PuppetfileEditor
       @modules[name].set(param, value, true)
     end
 
-    def compare_with(pfile)
+    def compare_with(pfile, compare_across_types: false)
       diff = {}
       pfile.modules.each do |mod_name, mod|
         next unless [:git, :hg, :forge].include? mod.type
@@ -91,7 +91,9 @@ module PuppetfileEditor
 
         local_mod = @modules[mod_name]
 
-        next unless mod.type == local_mod.type
+        unless compare_across_types
+          next unless mod.type == local_mod.type
+        end
         next unless mod.params.key?(version_key) && local_mod.params.key?(version_key)
         next if mod.params[version_key] == local_mod.params[version_key]
         diff[mod_name] = { old: local_mod.params[version_key], new: mod.params[version_key], type: mod.type }
