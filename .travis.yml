@@ -4,8 +4,10 @@ language: ruby
 
 rvm:
   - 2.3.5
-  - 2.4.2
-  - 2.5.0
+  - 2.4.6
+  - 2.5.4
+  - 2.6.1
+  - 2.7.0-preview1
 
 stages:
   - rubocop
