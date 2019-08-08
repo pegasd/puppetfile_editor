@@ -14,7 +14,7 @@ module PuppetfileEditor
       @params  = nil
       @message = nil
       @status  = nil
-      if args == :local
+      if args == { local: true } || args == :local
         @type = :local
       elsif args.nil? || args.is_a?(String) || args.is_a?(Symbol)
         @type   = :forge
