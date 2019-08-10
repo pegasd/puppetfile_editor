@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.10.0] - 2019-08-10
+### Added
+- Able to understand local modules in various formats. Both `, :local` and `, local: true` work.
+
 ## [0.9.0] - 2019-08-06
 ### Changed
 - Add ability to compare Puppetfiles ignoring module types (`git` vs `hg`).
