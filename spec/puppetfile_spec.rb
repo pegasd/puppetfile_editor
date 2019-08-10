@@ -57,7 +57,7 @@ RSpec.describe PuppetfileEditor::Puppetfile do
       pf.load
       expect(pf.generate_puppetfile).to eq(<<~RUBY,
         # Local modules
-        mod 'config', :local
+        mod 'config', local: true
 
         # Modules from the Puppet Forge
         mod 'puppetlabs/stdlib', '4.19.0'
@@ -86,15 +86,15 @@ RSpec.describe PuppetfileEditor::Puppetfile do
       pf.load
       expect(pf.generate_puppetfile).to eq(<<~RUBY,
         # Local modules
-        mod 'celery', :local
-        mod 'check_geoip', :local
-        mod 'config', :local
-        mod 'kibastic', :local
-        mod 'lsyncd', :local
-        mod 'mongo', :local
-        mod 's3cmd', :local
-        mod 'vcsrepo', :local
-        mod 'vpn', :local
+        mod 'celery', local: true
+        mod 'check_geoip', local: true
+        mod 'config', local: true
+        mod 'kibastic', local: true
+        mod 'lsyncd', local: true
+        mod 'mongo', local: true
+        mod 's3cmd', local: true
+        mod 'vcsrepo', local: true
+        mod 'vpn', local: true
 
         # Modules from the Puppet Forge
         mod 'puppetlabs/apache', '1.10.0'
