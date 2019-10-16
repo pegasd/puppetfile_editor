@@ -117,7 +117,7 @@ module PuppetfileEditor
       end
     end
 
-    def dump
+    def dump(legacy_local = false)
       output = []
       case @type
       when :hg, :git
@@ -132,7 +132,11 @@ module PuppetfileEditor
           output.push "    #{param} #{value}"
         end
       when :local
-        output.push("mod '#{full_title}', :local")
+        if legacy_local
+          output.push("mod '#{full_title}', :local")
+        else
+          output.push("mod '#{full_title}', local: true")
+        end
       else
         if @params.nil?
           output.push("mod '#{full_title}'")

@@ -20,4 +20,4 @@ mod 'lsyncd',	 :local
 mod 'kibastic',     :local
 mod 'mongo',	 :local
 mod 's3cmd',	 :local
-mod 'vcsrepo',   :local
+mod 'vcsrepo',   local: true
