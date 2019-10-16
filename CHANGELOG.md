@@ -5,10 +5,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Changed
+- [GH-3](https://github.com/pegasd/puppetfile_editor/issues/3): Write local modules in non-legacy format: `, local: true`.
 
 ## [0.10.0] - 2019-08-10
 ### Added
-- Able to understand local modules in various formats. Both `, :local` and `, local: true` work.
+- [GH-3](https://github.com/pegasd/puppetfile_editor/issues/3): Able to understand local modules in various formats. Both `, :local` and
+  `, local: true` work.
 
 ## [0.9.0] - 2019-08-06
 ### Changed
@@ -16,7 +19,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.8.0] - 2018-07-12
 ### Changed
-- [#1](https://github.com/pegasd/puppetfile_editor/issues/1): Do not downgrade modules while merging, whenever possible (see issue for more details).
+- [GH-1](https://github.com/pegasd/puppetfile_editor/issues/1): Do not downgrade modules while merging, whenever possible (see issue for
+  more details).
 - Changed status message and color for modules not found in original Puppetfile (old one generated too much noise).
 
 
