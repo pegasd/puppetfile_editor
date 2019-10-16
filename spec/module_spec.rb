@@ -152,7 +152,7 @@ RSpec.describe PuppetfileEditor::Module do
 
     it 'can dump local modules in legacy format' do
       m = described_class.new('local', local: true)
-      expect(m.dump(true)).to eq(
+      expect(m.dump(legacy_local: true)).to eq(
         <<~RUBY.chop,
           mod 'local', :local
         RUBY

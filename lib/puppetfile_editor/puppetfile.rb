@@ -49,7 +49,7 @@ module PuppetfileEditor
       @loaded = true
     end
 
-    def generate_puppetfile
+    def generate_puppetfile(args = {})
       raise StandardError, 'File is not loaded' unless @loaded
 
       contents = []
@@ -62,7 +62,7 @@ module PuppetfileEditor
 
         contents.push "# #{module_comment}"
         module_list.values.sort_by(&:name).each do |mod|
-          contents.push mod.dump
+          contents.push mod.dump(args)
         end
         contents.push ''
       end
@@ -70,8 +70,8 @@ module PuppetfileEditor
       contents.join("\n")
     end
 
-    def dump
-      File.write(@puppetfile_path, generate_puppetfile) if @loaded
+    def dump(args = {})
+      File.write(@puppetfile_path, generate_puppetfile(args)) if @loaded
     end
 
     def update_module(name, param, value)
