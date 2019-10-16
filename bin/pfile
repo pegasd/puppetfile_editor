@@ -23,6 +23,9 @@ subcommands = {
   end,
   'format' => OptionParser.new do |parser|
     parser.banner = "Usage: #{filename} format"
+    parser.on('--legacy-local', 'Use legacy format for local modules') do |setting|
+      options[:legacy_local] = setting
+    end
   end,
   'delete' => OptionParser.new do |parser|
     parser.banner = "Usage: #{filename} format -m MODULENAME"
