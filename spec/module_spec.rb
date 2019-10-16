@@ -61,6 +61,12 @@ RSpec.describe PuppetfileEditor::Module do
       expect(m.params[:branch]).to be_nil
     end
 
+    it 'errors when trying to set a version for git module' do
+      m = described_class.new('apt', git: 'url', branch: 'special')
+      m.set('version', '0.1.1', true)
+      expect(m.message).to match(/^only 'branch', 'tag', 'ref', and 'changeset' are supported for 'git' modules.$/)
+    end
+
     #
     # Mercurial
     #
@@ -100,6 +106,12 @@ RSpec.describe PuppetfileEditor::Module do
       expect(m.params[:changeset]).to be_nil
     end
 
+    it 'errors when trying to set a version for hg module' do
+      m = described_class.new('apt', hg: 'url', branch: 'special')
+      m.set('version', '0.1.1', true)
+      expect(m.message).to match(/^only 'branch', 'tag', 'ref', and 'changeset' are supported for 'hg' modules.$/)
+    end
+
     #
     # Forge
     #
@@ -109,17 +121,42 @@ RSpec.describe PuppetfileEditor::Module do
       m.set('version', '2.2.0')
       expect(m.params[:version]).to eq('2.2.0')
     end
+
+    it 'errors when trying to set a non-version param for forge module' do
+      m = described_class.new('KyleAnderson/consul', '2.1.0')
+      m.set('tag', '2.2.0')
+      expect(m.message).to match(/^only 'version' is supported for forge modules.$/)
+    end
   end
 
   describe '#dump' do
     it 'can dump git module' do
       m = described_class.new('apt', git: 'https://github.com/puppetlabs/puppetlabs-apt', branch: 'master')
-      expect(m.dump).to eq(<<~RUBY.chop,
-        mod 'apt',
-            git:    'https://github.com/puppetlabs/puppetlabs-apt',
-            branch: 'master'
-      RUBY
-                          )
+      expect(m.dump).to eq(
+        <<~RUBY.chop,
+          mod 'apt',
+              git:    'https://github.com/puppetlabs/puppetlabs-apt',
+              branch: 'master'
+        RUBY
+      )
+    end
+
+    it 'dumps local modules in non-legacy format' do
+      m = described_class.new('local', local: true)
+      expect(m.dump).to eq(
+        <<~RUBY.chop,
+          mod 'local', local: true
+        RUBY
+      )
+    end
+
+    it 'can dump local modules in legacy format' do
+      m = described_class.new('local', local: true)
+      expect(m.dump(true)).to eq(
+        <<~RUBY.chop,
+          mod 'local', :local
+        RUBY
+      )
     end
   end
 end
