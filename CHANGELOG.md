@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [1.1.0] - 2019-10-16
 ### Added
 - [GH-3](https://github.com/pegasd/puppetfile_editor/issues/3): Ability to write local modules in legacy format using
   `pfile format --legacy-local`.
